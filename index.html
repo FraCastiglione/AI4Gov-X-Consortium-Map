@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI4Gov-X Partner Map</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        #map { height: 100vh; width: 100%; background-color: #f4f4f4; }
+        
+        /* Legend Styles */
+        .legend {
+            line-height: 18px;
+            color: #555;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
+        .legend i {
+            width: 18px;
+            height: 18px;
+            float: left;
+            margin-right: 8px;
+            opacity: 0.9;
+        }
+        
+        /* Popup Styles */
+        .leaflet-popup-content {
+            font-size: 13px;
+            line-height: 1.4;
+            max-height: 300px;
+            overflow-y: auto;
+            width: 280px;
+        }
+        .popup-header {
+            font-weight: bold;
+            font-size: 15px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+            color: #333;
+        }
+        .partner-list { list-style: none; padding: 0; margin: 0; }
+        .partner-list li { margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px dotted #eee; }
+        .tag {
+            display: inline-block;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 10px;
+            color: white;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        .tag-current { background-color: #0056b3; } /* Dark Blue */
+        .tag-assoc { background-color: #0056b3; opacity: 0.8; } /* Same blue */
+        .tag-candidate { background-color: #5bc0de; color: #fff; } /* Light Blue */
+    </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<script>
+    // --- Configuration ---
+    // Colors
+    const COLOR_CURRENT = "#0056b3";    // Standard Blue
+    const COLOR_CANDIDATE = "#88CCEE";  // Light Blue
+    const COLOR_BOTH = "#2A2A72";       // Deep Blue/Indigo (Different kind of blue for overlap)
+    const COLOR_DEFAULT = "#dddddd";    // Grey for non-partners
+
+    // --- Data Source ---
+    // Mapping of Country Name to Partners List
+    const partnerData = {
+        "Italy": [
+            {code: "POLI.d", name: "POLI.DESIGN S.C.R.L.", type: "Current Partner"},
+            {code: "POLIMI", name: "POLITECNICO DI MILANO", type: "Current Partner"},
+            {code: "UNIBS", name: "UNIVERSITA DEGLI STUDI DI BRESCIA", type: "Current Partner"},
+            {code: "UNIBO", name: "ALMA MATER STUDIORUM - UNIVERSITA DI BOLOGNA", type: "Current Partner"},
+            {code: "TUV.IT", name: "TUV THURINGEN ITALIA SRL", type: "Current Partner"},
+            {code: "COGN", name: "COGNITO S.R.L.", type: "Current Partner"},
+            {code: "DOKI", name: "DOKIMAZO S.R.L. SOCIETA BENEFIT", type: "Current Partner"},
+            {code: "PROMOS", name: "PROMOS SRL SB", type: "Candidate Associated"}
+        ],
+        "Spain": [
+            {code: "UPM", name: "UNIVERSIDAD POLITECNICA DE MADRID", type: "Current Partner"},
+            {code: "IE", name: "INSTITUTO DE EMPRESA SL", type: "Current Partner"},
+            {code: "MUSOL", name: "Fundación MUSOL", type: "Current Partner"},
+            {code: "IF.E", name: "Inspiring Futures Europe", type: "Current Partner"},
+            {code: "KYRA", name: "KYRA SUNRISE SL", type: "Current Partner"},
+            {code: "DDS", name: "BYFACILITY SL", type: "Current Partner"},
+            {code: "UPSA", name: "Universidad Pontificia de Salamanca", type: "Candidate Associated"}
+        ],
+        "Croatia": [
+            {code: "FIDIT", name: "SVEUCILISTE U RIJECI", type: "Current Partner"},
+            {code: "EFRI", name: "SVEUCILISTE U RIJECI EKONOMSKI FAKULTET", type: "Current Partner"}
+        ],
+        "Netherlands": [
+            {code: "TUD", name: "TECHNISCHE UNIVERSITEIT DELFT", type: "Current Partner"}
+        ],
+        "Belgium": [
+            {code: "FARI", name: "VRIJE UNIVERSITEIT BRUSSEL", type: "Current Partner"},
+            {code: "KUL", name: "KATHOLIEKE UNIVERSITEIT LEUVEN", type: "Current Partner"},
+            {code: "CEPS", name: "CENTRE FOR EUROPEAN POLICY STUDIES", type: "Current Partner"},
+            {code: "VUC", name: "VUCABLE", type: "Current Partner"},
+            {code: "RIE", name: "RE-IMAGINE EUROPA", type: "Current Partner"},
+            {code: "TRS", name: "THE RIGHT STREET", type: "Current Partner"},
+            {code: "DE", name: "Digital Europe", type: "Current Associated"}
+        ],
+        "France": [
+            {code: "UL", name: "UNIVERSITE DE LILLE", type: "Current Partner"},
+            {code: "ESSEC", name: "ASSOCIATION GROUPE ESSEC", type: "Current Partner"}
+        ],
+        "Austria": [
+            {code: "DUK", name: "UNIVERSITAT FUR WEITERBILDUNG KREMS", type: "Current Partner"}
+        ],
+        "Estonia": [
+            {code: "EBS", name: "SIHTASUTUS ESTONIAN BUSINESS SCHOOL", type: "Current Partner"},
+            {code: "Tartu", name: "University of Tartu", type: "Candidate Associated"}
+        ],
+        "Portugal": [
+            {code: "Tec+", name: "ASSOCIACAO PARA O DESENVOLVIMENTO DO INSTITUTO SUPERIOR TECNICO", type: "Current Partner"},
+            {code: "PBS", name: "ASSOCIACAO PORTO BUSINESS SCHOOL", type: "Current Partner"},
+            {code: "INA", name: "Instituto Nacional de Administração, I.P.", type: "Candidate Associated"},
+            {code: "UNU-EGOV", name: "United Nations University", type: "Candidate Associated"}
+        ],
+        "Greece": [
+            {code: "UAE", name: "PANEPISTIMIO AIGAIOU", type: "Current Partner"},
+            {code: "EPLO", name: "EUROPEAN PUBLIC LAW ORGANIZATION", type: "Current Partner"}
+        ],
+        "Germany": [
+            {code: "FAU", name: "FRIEDRICH-ALEXANDER-UNIVERSITAET ERLANGEN-NUERNBERG", type: "Current Partner"}
+        ],
+        "Romania": [
+            {code: "UPB", name: "UNIVERSITATEA NATIONALA DE STIINTASI TEHNOLOGIE POLITEHNICA BUCURESTI", type: "Current Partner"}
+        ],
+        "Slovakia": [
+            {code: "TUKE", name: "TECHNICKA UNIVERZITA V KOSICIACH", type: "Current Partner"}
+        ],
+        "Ukraine": [
+            {code: "KNTU", name: "KHERSON NATIONAL TECHNICAL UNIVERSITY", type: "Current Partner"}
+        ],
+        "Bulgaria": [
+            {code: "RAM", name: "REGIONALNO SDRUZHENIE NA OBSTINI TSENTRALNA STARA PLANINA", type: "Current Partner"},
+            {code: "ITService", name: "ITService ltd.", type: "Candidate Associated"},
+            {code: "Gabrovo", name: "Municipality of Gabrovo", type: "Candidate Associated"},
+            {code: "Elena", name: "Municipality of Elena", type: "Candidate Associated"}
+        ],
+        "Cyprus": [
+            {code: "ANETEL", name: "ANAPTYXIAKI ETAIREIA EPARCHION LARNAKAS", type: "Current Partner"}
+        ],
+        "Serbia": [
+            {code: "E.INT", name: "GORAN PASTROVIC", type: "Current Partner"}
+        ],
+        "Hungary": [
+            {code: "BME", name: "BUDAPESTI MUSZAKI ES GAZDASAGTUDOMANYI EGYETEM", type: "Current Partner"},
+            {code: "UP", name: "University of Pecs", type: "Current Associated"}
+        ],
+        "Montenegro": [
+            {code: "ReSPA", name: "ReSPA", type: "Current Associated"}
+        ],
+        // --- Candidates Only ---
+        "Finland": [{code: "CLANED", name: "Learning Intelligence Group LIG Oy", type: "Candidate Associated"}],
+        "Norway": [
+            {code: "NTNU", name: "Norwegian University of Science and Technology", type: "Candidate Associated"},
+            {code: "SINTEF", name: "SINTEF Digital", type: "Candidate Associated"}
+        ],
+        "Sweden": [{code: "Experio", name: "Region Värmland / Experio Lab", type: "Candidate Associated"}],
+        "Denmark": [{code: "CBS", name: "Copenhagen Business School", type: "Candidate Associated"}],
+        "Poland": [{code: "CEZAMAT", name: "CEZAMAT PW Sp. z o.o.", type: "Candidate Associated"}],
+        "Bosnia and Herzegovina": [
+            {code: "SERDA", name: "Sarajevo Economic Region Development Agency", type: "Candidate Associated"},
+            {code: "PREDA", name: "Razvojna agencija Grada Prijedor", type: "Candidate Associated"}
+        ],
+        "Turkey": [{code: "Galatasaray", name: "University Galatasaray- Faculty of Law", type: "Candidate Associated"}],
+        "Morocco": [
+            {code: "ENSIAS", name: "École Nationale Supérieure d’Informatique et d’Analyse des Systèmes", type: "Candidate Associated"},
+            {code: "Intilaka", name: "Association al Intilaka", type: "Candidate Associated"}
+        ],
+        "Egypt": [
+            {code: "BTU", name: "Beni Suef Technological University", type: "Candidate Associated"},
+            {code: "BRISK", name: "BRISK Business", type: "Candidate Associated"}
+        ],
+        "Argentina": [{code: "FLACSO", name: "Facultad Latinoamerica de Ciencias Sociales", type: "Candidate Associated"}],
+        "Costa Rica": [{code: "DEMUCA", name: "Fundación DEMUCA", type: "Candidate Associated"}],
+        "Guatemala": [{code: "DEMUCA", name: "Fundación DEMUCA", type: "Candidate Associated"}],
+        // Andean Community Group
+        "Ecuador": [{code: "UASB", name: "Universidad Andina Simón Bolívar (Andean Community)", type: "Candidate Associated"}],
+        "Colombia": [{code: "UASB", name: "Universidad Andina Simón Bolívar (Andean Community)", type: "Candidate Associated"}],
+        "Peru": [{code: "UASB", name: "Universidad Andina Simón Bolívar (Andean Community)", type: "Candidate Associated"}],
+        "Bolivia": [{code: "UASB", name: "Universidad Andina Simón Bolívar (Andean Community)", type: "Candidate Associated"}],
+    };
+
+    // --- Logic to determine country status ---
+    function getCountryStatus(partners) {
+        let hasCurrent = false;
+        let hasCandidate = false;
+        
+        partners.forEach(p => {
+            if (p.type.includes("Current")) hasCurrent = true;
+            if (p.type.includes("Candidate")) hasCandidate = true;
+        });
+
+        if (hasCurrent && hasCandidate) return "both";
+        if (hasCurrent) return "current";
+        if (hasCandidate) return "candidate";
+        return "none";
+    }
+
+    function getColor(status) {
+        switch(status) {
+            case "current": return COLOR_CURRENT;
+            case "candidate": return COLOR_CANDIDATE;
+            case "both": return COLOR_BOTH;
+            default: return COLOR_DEFAULT;
+        }
+    }
+
+    function getPopupContent(countryName, partners) {
+        let html = `<div class="popup-header">${countryName}</div><ul class="partner-list">`;
+        partners.forEach(p => {
+            let tagClass = p.type.includes("Current") ? "tag-current" : "tag-candidate";
+            html += `<li>
+                        <b>${p.code}</b><br>
+                        ${p.name}
+                        <span class="tag ${tagClass}">${p.type === "Current Associated" ? "Assoc. Partner" : (p.type === "Candidate Associated" ? "Candidate" : "Partner")}</span>
+                     </li>`;
+        });
+        html += "</ul>";
+        return html;
+    }
+
+    // --- Map Initialization ---
+    const map = L.map('map').setView([48.0, 15.0], 4); // Centered on Europe
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 19
+    }).addTo(map);
+
+    // Fetch GeoJSON for World Countries
+    fetch('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json')
+        .then(response => response.json())
+        .then(data => {
+            L.geoJson(data, {
+                style: function(feature) {
+                    const name = feature.properties.name;
+                    // Normalize names for common discrepancies
+                    let key = name;
+                    if(name === "Republic of Serbia") key = "Serbia";
+                    if(name === "The Netherlands") key = "Netherlands";
+                    if(name === "United Republic of Tanzania") key = "Tanzania"; // Just in case
+                    
+                    const partners = partnerData[key];
+                    const status = partners ? getCountryStatus(partners) : "none";
+
+                    return {
+                        fillColor: getColor(status),
+                        weight: 1,
+                        opacity: 1,
+                        color: 'white',
+                        fillOpacity: 0.7
+                    };
+                },
+                onEachFeature: function(feature, layer) {
+                    const name = feature.properties.name;
+                    let key = name;
+                    // Name Normalization
+                    if(name === "Republic of Serbia") key = "Serbia";
+                    if(name === "The Netherlands") key = "Netherlands";
+                    
+                    const partners = partnerData[key];
+
+                    if (partners) {
+                        // Bind Popup
+                        layer.bindPopup(getPopupContent(key, partners));
+
+                        // Hover Effects
+                        layer.on({
+                            mouseover: function(e) {
+                                var layer = e.target;
+                                layer.setStyle({
+                                    weight: 2,
+                                    color: '#666',
+                                    fillOpacity: 0.9
+                                });
+                                layer.openPopup();
+                            },
+                            mouseout: function(e) {
+                                var layer = e.target;
+                                layer.setStyle({
+                                    weight: 1,
+                                    color: 'white',
+                                    fillOpacity: 0.7
+                                });
+                                // layer.closePopup(); // Optional: keep open if desired, but standard is to close or click to keep.
+                            }
+                        });
+                    }
+                }
+            }).addTo(map);
+        });
+
+    // --- Legend ---
+    var legend = L.control({position: 'bottomright'});
+
+    legend.onAdd = function (map) {
+        var div = L.DomUtil.create('div', 'legend');
+        div.innerHTML += '<h4>AI4Gov-X Network</h4>';
+        div.innerHTML += '<i style="background:' + COLOR_CURRENT + '"></i> Current Partners<br>';
+        div.innerHTML += '<i style="background:' + COLOR_CANDIDATE + '"></i> Candidate Partners<br>';
+        div.innerHTML += '<i style="background:' + COLOR_BOTH + '"></i> Covered by Both<br>';
+        return div;
+    };
+
+    legend.addTo(map);
+
+</script>
+</body>
+</html>
