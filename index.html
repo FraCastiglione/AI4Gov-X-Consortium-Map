@@ -110,7 +110,8 @@
             {code: "VUC", name: "VUCABLE", type: "Current Partner"},
             {code: "RIE", name: "RE-IMAGINE EUROPA", type: "Current Partner"},
             {code: "TRS", name: "THE RIGHT STREET", type: "Current Partner"},
-            {code: "DE", name: "Digital Europe", type: "Current Associated"}
+            {code: "DE", name: "Digital Europe", type: "Current Associated"},
+            {code: "TotalEU", name: "TotalEU Production", type: "Candidate Associated"}
         ],
         "France": [
             {code: "UL", name: "UNIVERSITE DE LILLE", type: "Current Partner"},
@@ -165,7 +166,10 @@
             {code: "ReSPA", name: "ReSPA", type: "Current Associated"}
         ],
         // --- Candidates Only ---
-        "Finland": [{code: "CLANED", name: "Learning Intelligence Group LIG Oy", type: "Candidate Associated"}],
+        "Finland": [
+            {code: "CLANED", name: "Learning Intelligence Group LIG Oy", type: "Candidate Associated"},
+            {code: "LAUREA", name: "Laurea University of Applied Sciences", type: "Candidate Associated"}
+        ],
         "Norway": [
             {code: "NTNU", name: "Norwegian University of Science and Technology", type: "Candidate Associated"},
             {code: "SINTEF", name: "SINTEF Digital", type: "Candidate Associated"}
@@ -178,6 +182,7 @@
             {code: "PREDA", name: "Razvojna agencija Grada Prijedor", type: "Candidate Associated"}
         ],
         "Turkey": [{code: "Galatasaray", name: "University Galatasaray- Faculty of Law", type: "Candidate Associated"}],
+        "Albania": [{code: "IAM", name: "Institute for Albanian Municipalities", type: "Candidate Associated"}],
         "Morocco": [
             {code: "ENSIAS", name: "École Nationale Supérieure d’Informatique et d’Analyse des Systèmes", type: "Candidate Associated"},
             {code: "Intilaka", name: "Association al Intilaka", type: "Candidate Associated"}
@@ -255,7 +260,7 @@
                     let key = name;
                     if(name === "Republic of Serbia") key = "Serbia";
                     if(name === "The Netherlands") key = "Netherlands";
-                    if(name === "United Republic of Tanzania") key = "Tanzania"; // Just in case
+                    if(name === "United Republic of Tanzania") key = "Tanzania";
                     
                     const partners = partnerData[key];
                     const status = partners ? getCountryStatus(partners) : "none";
@@ -299,7 +304,7 @@
                                     color: 'white',
                                     fillOpacity: 0.7
                                 });
-                                // layer.closePopup(); // Optional: keep open if desired, but standard is to close or click to keep.
+                                // layer.closePopup(); 
                             }
                         });
                     }
