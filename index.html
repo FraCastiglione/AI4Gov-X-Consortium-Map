@@ -203,6 +203,8 @@
         "Colombia": [{code: "UASB", name: "Universidad Andina Simón Bolívar (Andean Community)", type: "Candidate Associated"}],
         "Peru": [{code: "UASB", name: "Universidad Andina Simón Bolívar (Andean Community)", type: "Candidate Associated"}],
         "Bolivia": [{code: "UASB", name: "Universidad Andina Simón Bolívar (Andean Community)", type: "Candidate Associated"}],
+        // Asia
+        "South Korea": [{code: "IFG", name: "Institute for Future Government, Yonsei University", type: "Candidate Associated"}],
     };
 
     // --- Logic to determine country status ---
@@ -265,6 +267,7 @@
                     if(name === "Republic of Serbia") key = "Serbia";
                     if(name === "The Netherlands") key = "Netherlands";
                     if(name === "United Republic of Tanzania") key = "Tanzania";
+                    if(name === "Republic of Korea") key = "South Korea"; // Safety check for Korea
                     
                     const partners = partnerData[key];
                     const status = partners ? getCountryStatus(partners) : "none";
@@ -283,6 +286,7 @@
                     // Name Normalization
                     if(name === "Republic of Serbia") key = "Serbia";
                     if(name === "The Netherlands") key = "Netherlands";
+                    if(name === "Republic of Korea") key = "South Korea";
                     
                     const partners = partnerData[key];
 
