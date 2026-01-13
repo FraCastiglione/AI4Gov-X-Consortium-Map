@@ -71,12 +71,13 @@
     // Colors
     const COLOR_CURRENT = "#0056b3";    // Standard Blue
     const COLOR_CANDIDATE = "#88CCEE";  // Light Blue
-    const COLOR_BOTH = "#2A2A72";       // Deep Blue/Indigo (Different kind of blue for overlap)
-    const COLOR_DEFAULT = "#dddddd";    // Grey for non-partners
+    const COLOR_BOTH = "#2A2A72";       // Deep Blue/Indigo (Overlap)
+    const COLOR_DEFAULT = "#dddddd";    // Grey
 
     // --- Data Source ---
     // Mapping of Country Name to Partners List
     const partnerData = {
+        // --- Current & Mixed Partners ---
         "Italy": [
             {code: "POLI.d", name: "POLI.DESIGN S.C.R.L.", type: "Current Partner"},
             {code: "POLIMI", name: "POLITECNICO DI MILANO", type: "Current Partner"},
@@ -96,13 +97,6 @@
             {code: "DDS", name: "BYFACILITY SL", type: "Current Partner"},
             {code: "UPSA", name: "Universidad Pontificia de Salamanca", type: "Candidate Associated"}
         ],
-        "Croatia": [
-            {code: "FIDIT", name: "SVEUCILISTE U RIJECI", type: "Current Partner"},
-            {code: "EFRI", name: "SVEUCILISTE U RIJECI EKONOMSKI FAKULTET", type: "Current Partner"}
-        ],
-        "Netherlands": [
-            {code: "TUD", name: "TECHNISCHE UNIVERSITEIT DELFT", type: "Current Partner"}
-        ],
         "Belgium": [
             {code: "FARI", name: "VRIJE UNIVERSITEIT BRUSSEL", type: "Current Partner"},
             {code: "KUL", name: "KATHOLIEKE UNIVERSITEIT LEUVEN", type: "Current Partner"},
@@ -112,13 +106,6 @@
             {code: "TRS", name: "THE RIGHT STREET", type: "Current Partner"},
             {code: "DE", name: "Digital Europe", type: "Current Associated"},
             {code: "TotalEU", name: "TotalEU Production", type: "Candidate Associated"}
-        ],
-        "France": [
-            {code: "UL", name: "UNIVERSITE DE LILLE", type: "Current Partner"},
-            {code: "ESSEC", name: "ASSOCIATION GROUPE ESSEC", type: "Current Partner"}
-        ],
-        "Austria": [
-            {code: "DUK", name: "UNIVERSITAT FUR WEITERBILDUNG KREMS", type: "Current Partner"}
         ],
         "Estonia": [
             {code: "EBS", name: "SIHTASUTUS ESTONIAN BUSINESS SCHOOL", type: "Current Partner"},
@@ -130,41 +117,39 @@
             {code: "INA", name: "Instituto Nacional de Administração, I.P.", type: "Candidate Associated"},
             {code: "UNU-EGOV", name: "United Nations University", type: "Candidate Associated"}
         ],
-        "Greece": [
-            {code: "UAE", name: "PANEPISTIMIO AIGAIOU", type: "Current Partner"},
-            {code: "EPLO", name: "EUROPEAN PUBLIC LAW ORGANIZATION", type: "Current Partner"}
-        ],
-        "Germany": [
-            {code: "FAU", name: "FRIEDRICH-ALEXANDER-UNIVERSITAET ERLANGEN-NUERNBERG", type: "Current Partner"}
-        ],
-        "Romania": [
-            {code: "UPB", name: "UNIVERSITATEA NATIONALA DE STIINTASI TEHNOLOGIE POLITEHNICA BUCURESTI", type: "Current Partner"}
-        ],
-        "Slovakia": [
-            {code: "TUKE", name: "TECHNICKA UNIVERZITA V KOSICIACH", type: "Current Partner"}
-        ],
-        "Ukraine": [
-            {code: "KNTU", name: "KHERSON NATIONAL TECHNICAL UNIVERSITY", type: "Current Partner"}
-        ],
         "Bulgaria": [
             {code: "RAM", name: "REGIONALNO SDRUZHENIE NA OBSTINI TSENTRALNA STARA PLANINA", type: "Current Partner"},
             {code: "ITService", name: "ITService ltd.", type: "Candidate Associated"},
             {code: "Gabrovo", name: "Municipality of Gabrovo", type: "Candidate Associated"},
             {code: "Elena", name: "Municipality of Elena", type: "Candidate Associated"}
         ],
-        "Cyprus": [
-            {code: "ANETEL", name: "ANAPTYXIAKI ETAIREIA EPARCHION LARNAKAS", type: "Current Partner"}
-        ],
-        "Serbia": [
-            {code: "E.INT", name: "GORAN PASTROVIC", type: "Current Partner"}
-        ],
         "Hungary": [
             {code: "BME", name: "BUDAPESTI MUSZAKI ES GAZDASAGTUDOMANYI EGYETEM", type: "Current Partner"},
             {code: "UP", name: "University of Pecs", type: "Current Associated"}
         ],
-        "Montenegro": [
-            {code: "ReSPA", name: "ReSPA", type: "Current Associated"}
+        // --- Current Partners Only ---
+        "Croatia": [
+            {code: "FIDIT", name: "SVEUCILISTE U RIJECI", type: "Current Partner"},
+            {code: "EFRI", name: "SVEUCILISTE U RIJECI EKONOMSKI FAKULTET", type: "Current Partner"}
         ],
+        "Netherlands": [{code: "TUD", name: "TECHNISCHE UNIVERSITEIT DELFT", type: "Current Partner"}],
+        "France": [
+            {code: "UL", name: "UNIVERSITE DE LILLE", type: "Current Partner"},
+            {code: "ESSEC", name: "ASSOCIATION GROUPE ESSEC", type: "Current Partner"}
+        ],
+        "Austria": [{code: "DUK", name: "UNIVERSITAT FUR WEITERBILDUNG KREMS", type: "Current Partner"}],
+        "Greece": [
+            {code: "UAE", name: "PANEPISTIMIO AIGAIOU", type: "Current Partner"},
+            {code: "EPLO", name: "EUROPEAN PUBLIC LAW ORGANIZATION", type: "Current Partner"}
+        ],
+        "Germany": [{code: "FAU", name: "FRIEDRICH-ALEXANDER-UNIVERSITAET ERLANGEN-NUERNBERG", type: "Current Partner"}],
+        "Romania": [{code: "UPB", name: "UNIVERSITATEA NATIONALA DE STIINTASI TEHNOLOGIE POLITEHNICA BUCURESTI", type: "Current Partner"}],
+        "Slovakia": [{code: "TUKE", name: "TECHNICKA UNIVERZITA V KOSICIACH", type: "Current Partner"}],
+        "Ukraine": [{code: "KNTU", name: "KHERSON NATIONAL TECHNICAL UNIVERSITY", type: "Current Partner"}],
+        "Cyprus": [{code: "ANETEL", name: "ANAPTYXIAKI ETAIREIA EPARCHION LARNAKAS", type: "Current Partner"}],
+        "Serbia": [{code: "E.INT", name: "GORAN PASTROVIC", type: "Current Partner"}],
+        "Montenegro": [{code: "ReSPA", name: "ReSPA", type: "Current Associated"}],
+
         // --- Candidates Only ---
         "Finland": [
             {code: "CLANED", name: "Learning Intelligence Group LIG Oy", type: "Candidate Associated"},
@@ -185,7 +170,7 @@
             {code: "PREDA", name: "Razvojna agencija Grada Prijedor", type: "Candidate Associated"},
             {code: "AduRS", name: "Civil Service Agency of the Republic of Srpska", type: "Candidate Associated"}
         ],
-        "Turkey": [{code: "Galatasaray", name: "University Galatasaray- Faculty of Law", type: "Candidate Associated"}],
+        "Turkey": [{code: "Galatasaray", name: "University Galatasaray - Faculty of Law", type: "Candidate Associated"}],
         "Albania": [{code: "IAM", name: "Institute for Albanian Municipalities", type: "Candidate Associated"}],
         "Morocco": [
             {code: "ENSIAS", name: "École Nationale Supérieure d’Informatique et d’Analyse des Systèmes", type: "Candidate Associated"},
@@ -247,7 +232,8 @@
     }
 
     // --- Map Initialization ---
-    const map = L.map('map').setView([48.0, 15.0], 4); // Centered on Europe
+    // Zoom set to 3 to show more global partners initially
+    const map = L.map('map').setView([48.0, 15.0], 3); 
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
@@ -262,13 +248,20 @@
             L.geoJson(data, {
                 style: function(feature) {
                     const name = feature.properties.name;
-                    // Normalize names for common discrepancies
                     let key = name;
-                    if(name === "Republic of Serbia") key = "Serbia";
-                    if(name === "The Netherlands") key = "Netherlands";
-                    if(name === "United Republic of Tanzania") key = "Tanzania";
-                    if(name === "Republic of Korea") key = "South Korea"; // Safety check for Korea
+
+                    // --- ROBUST NAME NORMALIZATION ---
+                    // Fixes issues where map data names differ from our list
+                    if (name === "Republic of Serbia") key = "Serbia";
+                    if (name === "The Netherlands") key = "Netherlands";
+                    if (name === "United Republic of Tanzania") key = "Tanzania";
                     
+                    // Specific fix for South Korea variants (Republic of Korea, Korea, etc.)
+                    // but excluding North Korea (Democratic People's Republic)
+                    if (name.includes("Korea") && !name.includes("Democratic")) {
+                        key = "South Korea";
+                    }
+
                     const partners = partnerData[key];
                     const status = partners ? getCountryStatus(partners) : "none";
 
@@ -283,36 +276,24 @@
                 onEachFeature: function(feature, layer) {
                     const name = feature.properties.name;
                     let key = name;
-                    // Name Normalization
-                    if(name === "Republic of Serbia") key = "Serbia";
-                    if(name === "The Netherlands") key = "Netherlands";
-                    if(name === "Republic of Korea") key = "South Korea";
                     
+                    if (name === "Republic of Serbia") key = "Serbia";
+                    if (name === "The Netherlands") key = "Netherlands";
+                    if (name.includes("Korea") && !name.includes("Democratic")) key = "South Korea";
+
                     const partners = partnerData[key];
 
                     if (partners) {
-                        // Bind Popup
                         layer.bindPopup(getPopupContent(key, partners));
-
-                        // Hover Effects
                         layer.on({
                             mouseover: function(e) {
                                 var layer = e.target;
-                                layer.setStyle({
-                                    weight: 2,
-                                    color: '#666',
-                                    fillOpacity: 0.9
-                                });
+                                layer.setStyle({ weight: 2, color: '#666', fillOpacity: 0.9 });
                                 layer.openPopup();
                             },
                             mouseout: function(e) {
                                 var layer = e.target;
-                                layer.setStyle({
-                                    weight: 1,
-                                    color: 'white',
-                                    fillOpacity: 0.7
-                                });
-                                // layer.closePopup(); 
+                                layer.setStyle({ weight: 1, color: 'white', fillOpacity: 0.7 });
                             }
                         });
                     }
