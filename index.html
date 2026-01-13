@@ -56,7 +56,6 @@
             margin-left: 5px;
         }
         .tag-current { background-color: #0056b3; } /* Dark Blue */
-        .tag-assoc { background-color: #0056b3; opacity: 0.8; } /* Same blue */
         .tag-candidate { background-color: #5bc0de; color: #fff; } /* Light Blue */
     </style>
 </head>
@@ -232,8 +231,8 @@
     }
 
     // --- Map Initialization ---
-    // Zoom set to 3 to show more global partners initially
-    const map = L.map('map').setView([48.0, 15.0], 3); 
+    // ZOOM SET TO 2 for GLOBAL VIEW
+    const map = L.map('map').setView([20.0, 10.0], 2); 
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
@@ -248,20 +247,17 @@
             L.geoJson(data, {
                 style: function(feature) {
                     const name = feature.properties.name;
+                    const id = feature.id; // Get the 3-letter country code (e.g., KOR)
                     let key = name;
 
-                    // --- ROBUST NAME NORMALIZATION ---
-                    // Fixes issues where map data names differ from our list
+                    // --- ROBUST NAME/ID NORMALIZATION ---
+                    if (id === "KOR" || name.includes("Korea") && !name.includes("Democratic")) {
+                        key = "South Korea"; 
+                    }
                     if (name === "Republic of Serbia") key = "Serbia";
                     if (name === "The Netherlands") key = "Netherlands";
                     if (name === "United Republic of Tanzania") key = "Tanzania";
                     
-                    // Specific fix for South Korea variants (Republic of Korea, Korea, etc.)
-                    // but excluding North Korea (Democratic People's Republic)
-                    if (name.includes("Korea") && !name.includes("Democratic")) {
-                        key = "South Korea";
-                    }
-
                     const partners = partnerData[key];
                     const status = partners ? getCountryStatus(partners) : "none";
 
@@ -275,12 +271,16 @@
                 },
                 onEachFeature: function(feature, layer) {
                     const name = feature.properties.name;
+                    const id = feature.id;
                     let key = name;
                     
+                    // Same normalization logic for the popup
+                    if (id === "KOR" || name.includes("Korea") && !name.includes("Democratic")) {
+                        key = "South Korea"; 
+                    }
                     if (name === "Republic of Serbia") key = "Serbia";
                     if (name === "The Netherlands") key = "Netherlands";
-                    if (name.includes("Korea") && !name.includes("Democratic")) key = "South Korea";
-
+                    
                     const partners = partnerData[key];
 
                     if (partners) {
