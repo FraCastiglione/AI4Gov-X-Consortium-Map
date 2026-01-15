@@ -56,7 +56,6 @@
             margin-left: 5px;
         }
         .tag-current { background-color: #0056b3; } /* Dark Blue */
-        .tag-assoc { background-color: #0056b3; opacity: 0.8; } /* Same blue */
         .tag-candidate { background-color: #5bc0de; color: #fff; } /* Light Blue */
     </style>
 </head>
@@ -67,18 +66,14 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 <script>
-    // --- DEBUG CHECK ---
-    // If you don't see this alert, your browser is caching the old file.
-    // Uncomment the line below if you want a popup confirmation.
-    // alert("Map Version: Updated!");
-
     // --- Configuration ---
     const COLOR_CURRENT = "#0056b3";    // Standard Blue
     const COLOR_CANDIDATE = "#88CCEE";  // Light Blue
-    const COLOR_BOTH = "#2A2A72";       // Deep Blue/Indigo
+    const COLOR_BOTH = "#2A2A72";       // Deep Blue/Indigo (Overlap)
     const COLOR_DEFAULT = "#dddddd";    // Grey
 
     // --- Data Source ---
+    // Mapping of Country Name to Partners List
     const partnerData = {
         // --- Current & Mixed Partners ---
         "Italy": [
@@ -195,7 +190,7 @@
         "South Korea": [{code: "IFG", name: "Institute for Future Government, Yonsei University", type: "Candidate Associated"}],
     };
 
-    // --- Logic ---
+    // --- Logic to determine country status ---
     function getCountryStatus(partners) {
         let hasCurrent = false;
         let hasCandidate = false;
@@ -235,7 +230,7 @@
     }
 
     // --- Map Initialization ---
-    // ZOOM: Set to 2 (Global view)
+    // ZOOM SET TO 2 for GLOBAL VIEW
     const map = L.map('map').setView([20.0, 10.0], 2); 
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
@@ -244,9 +239,9 @@
         maxZoom: 19
     }).addTo(map);
 
-    // --- NEW DATA SOURCE (D3 Graph Gallery) ---
-    // This source is cleaner and usually names South Korea simply as "South Korea"
-    fetch('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson')
+    // Fetch GeoJSON for World Countries
+    // Using the original reliable source
+    fetch('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json')
         .then(response => response.json())
         .then(data => {
             L.geoJson(data, {
@@ -254,15 +249,12 @@
                     const name = feature.properties.name;
                     let key = name;
 
-                    // --- ROBUST NAMING FIXES ---
+                    // --- NAME MAPPING FIXES ---
+                    if (name === "Republic of Korea") key = "South Korea"; // Crucial Fix
                     if (name === "Republic of Serbia") key = "Serbia";
                     if (name === "The Netherlands") key = "Netherlands";
-                    if (name === "Tanzania") key = "Tanzania";
+                    if (name === "United Republic of Tanzania") key = "Tanzania";
                     
-                    // Safety check for Korea
-                    if (name.includes("Korea") && !name.includes("Dem")) key = "South Korea"; 
-                    if (name === "South Korea") key = "South Korea";
-
                     const partners = partnerData[key];
                     const status = partners ? getCountryStatus(partners) : "none";
 
@@ -278,11 +270,11 @@
                     const name = feature.properties.name;
                     let key = name;
                     
+                    // --- NAME MAPPING FIXES (Must match style function) ---
+                    if (name === "Republic of Korea") key = "South Korea"; 
                     if (name === "Republic of Serbia") key = "Serbia";
                     if (name === "The Netherlands") key = "Netherlands";
-                    if (name.includes("Korea") && !name.includes("Dem")) key = "South Korea"; 
-                    if (name === "South Korea") key = "South Korea";
-
+                    
                     const partners = partnerData[key];
 
                     if (partners) {
