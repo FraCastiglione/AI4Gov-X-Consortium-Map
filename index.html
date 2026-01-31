@@ -56,6 +56,7 @@
             margin-left: 5px;
         }
         .tag-current { background-color: #0056b3; } /* Dark Blue */
+        .tag-assoc { background-color: #0056b3; opacity: 0.8; } /* Same blue */
         .tag-candidate { background-color: #5bc0de; color: #fff; } /* Light Blue */
     </style>
 </head>
@@ -85,6 +86,11 @@
             {code: "COGN", name: "COGNITO S.R.L.", type: "Current Partner"},
             {code: "DOKI", name: "DOKIMAZO S.R.L. SOCIETA BENEFIT", type: "Current Partner"},
             {code: "PROMOS", name: "PROMOS SRL SB", type: "Candidate Associated"}
+        ],
+        "Germany": [
+            {code: "FAU", name: "FRIEDRICH-ALEXANDER-UNIVERSITAET ERLANGEN-NUERNBERG", type: "Current Partner"},
+            // ADDED: New Candidate Partner (Mixes colors to Indigo)
+            {code: "TPSDA", name: "Teaching Public Service in the Digital Age c/o Interalia gGmbH", type: "Candidate Associated"}
         ],
         "Spain": [
             {code: "UPM", name: "UNIVERSIDAD POLITECNICA DE MADRID", type: "Current Partner"},
@@ -140,7 +146,6 @@
             {code: "UAE", name: "PANEPISTIMIO AIGAIOU", type: "Current Partner"},
             {code: "EPLO", name: "EUROPEAN PUBLIC LAW ORGANIZATION", type: "Current Partner"}
         ],
-        "Germany": [{code: "FAU", name: "FRIEDRICH-ALEXANDER-UNIVERSITAET ERLANGEN-NUERNBERG", type: "Current Partner"}],
         "Romania": [{code: "UPB", name: "UNIVERSITATEA NATIONALA DE STIINTASI TEHNOLOGIE POLITEHNICA BUCURESTI", type: "Current Partner"}],
         "Slovakia": [{code: "TUKE", name: "TECHNICKA UNIVERZITA V KOSICIACH", type: "Current Partner"}],
         "Ukraine": [{code: "KNTU", name: "KHERSON NATIONAL TECHNICAL UNIVERSITY", type: "Current Partner"}],
@@ -149,6 +154,20 @@
         "Montenegro": [{code: "ReSPA", name: "ReSPA", type: "Current Associated"}],
 
         // --- Candidates Only ---
+        "Slovenia": [
+            {code: "JSI", name: "Jožef Stefan Institute", type: "Candidate Associated"},
+            {code: "E-zavod", name: "E-zavod", type: "Candidate Associated"}
+        ],
+        "Lithuania": [
+            {code: "Visionary", name: "Visionary Analytics (UAB)", type: "Candidate Associated"}
+        ],
+        "Kosovo": [
+            {code: "Customs", name: "Kosovo Customs", type: "Candidate Associated"}
+        ],
+        "Sweden": [
+            {code: "Experio", name: "Region Värmland / Experio Lab", type: "Candidate Associated"},
+            {code: "Linköping", name: "Linköping University", type: "Candidate Associated"}
+        ],
         "Finland": [
             {code: "CLANED", name: "Learning Intelligence Group LIG Oy", type: "Candidate Associated"},
             {code: "LAUREA", name: "Laurea University of Applied Sciences", type: "Candidate Associated"}
@@ -157,7 +176,6 @@
             {code: "NTNU", name: "Norwegian University of Science and Technology", type: "Candidate Associated"},
             {code: "SINTEF", name: "SINTEF Digital", type: "Candidate Associated"}
         ],
-        "Sweden": [{code: "Experio", name: "Region Värmland / Experio Lab", type: "Candidate Associated"}],
         "Denmark": [{code: "CBS", name: "Copenhagen Business School", type: "Candidate Associated"}],
         "Poland": [
             {code: "CEZAMAT", name: "CEZAMAT PW Sp. z o.o.", type: "Candidate Associated"},
@@ -170,6 +188,17 @@
         ],
         "Turkey": [{code: "Galatasaray", name: "University Galatasaray - Faculty of Law", type: "Candidate Associated"}],
         "Albania": [{code: "IAM", name: "Institute for Albanian Municipalities", type: "Candidate Associated"}],
+        
+        // --- Global Candidates ---
+        "Australia": [
+            {code: "EAC", name: "Ethical AI Consulting Pty Ltd", type: "Candidate Associated"}
+        ],
+        "United Arab Emirates": [
+            {code: "CFG", name: "Center for the Future of Government (MBRSG)", type: "Candidate Associated"}
+        ],
+        "South Korea": [{code: "IFG", name: "Institute for Future Government, Yonsei University", type: "Candidate Associated"}],
+        
+        // --- Africa & Americas ---
         "Morocco": [
             {code: "ENSIAS", name: "École Nationale Supérieure d’Informatique et d’Analyse des Systèmes", type: "Candidate Associated"},
             {code: "Intilaka", name: "Association al Intilaka", type: "Candidate Associated"}
@@ -186,8 +215,6 @@
         "Colombia": [{code: "UASB", name: "Universidad Andina Simón Bolívar (Andean Community)", type: "Candidate Associated"}],
         "Peru": [{code: "UASB", name: "Universidad Andina Simón Bolívar (Andean Community)", type: "Candidate Associated"}],
         "Bolivia": [{code: "UASB", name: "Universidad Andina Simón Bolívar (Andean Community)", type: "Candidate Associated"}],
-        // Asia
-        "South Korea": [{code: "IFG", name: "Institute for Future Government, Yonsei University", type: "Candidate Associated"}],
     };
 
     // --- Logic to determine country status ---
@@ -250,7 +277,7 @@
                     let key = name;
 
                     // --- NAME MAPPING FIXES ---
-                    if (name === "Republic of Korea") key = "South Korea"; // Crucial Fix
+                    if (name === "Republic of Korea") key = "South Korea"; 
                     if (name === "Republic of Serbia") key = "Serbia";
                     if (name === "The Netherlands") key = "Netherlands";
                     if (name === "United Republic of Tanzania") key = "Tanzania";
