@@ -11,7 +11,7 @@
         body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         #map { height: 100vh; width: 100%; background-color: #f4f4f4; }
         
-        /* Legend Styles */
+        /* --- LEGEND --- */
         .legend {
             line-height: 18px;
             color: #555;
@@ -28,104 +28,136 @@
             margin-right: 8px;
             opacity: 0.9;
         }
-        
-        /* Stats Panel Styles */
+
+        /* --- PROJECT OVERVIEW PANEL --- */
         .info.stats {
             background: white;
-            padding: 15px;
-            border-radius: 5px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
-            width: 300px;
-            max-height: 80vh; /* Prevents it from being too tall */
+            padding: 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            width: 320px;
+            max-height: 90vh;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .info.stats.minimized {
+            width: 200px;
+            height: auto;
         }
         .stats-header {
+            background: #0056b3;
+            color: white;
+            padding: 12px 15px;
             font-size: 16px;
             font-weight: bold;
-            color: #333;
-            margin-bottom: 10px;
-            border-bottom: 2px solid #0056b3;
-            padding-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
         }
+        .stats-header:hover { background: #004494; }
+        .toggle-btn { font-size: 18px; font-weight: bold; line-height: 1; }
+        
+        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 8px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-bottom: 1px solid #eee;
         }
+        .info.stats.minimized .stats-grid,
+        .info.stats.minimized .partner-scroll { display: none; }
+        
         .stat-item {
             text-align: center;
-            background: #f9f9f9;
-            padding: 5px;
-            border-radius: 4px;
+            background: white;
+            padding: 8px 5px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
         }
-        .stat-number {
-            display: block;
-            font-size: 18px;
-            font-weight: bold;
-            color: #0056b3;
+        .stat-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-color: #0056b3;
         }
-        .stat-label {
-            font-size: 11px;
-            color: #666;
-            text-transform: uppercase;
-        }
+        .stat-number { display: block; font-size: 20px; font-weight: 800; color: #0056b3; }
+        .stat-label { font-size: 10px; color: #666; text-transform: uppercase; font-weight: 600; margin-top: 2px;}
 
-        /* Scrollable List Styles */
+        /* Scrollable Sidebar List */
         .partner-scroll {
             overflow-y: auto;
             flex-grow: 1;
-            border-top: 1px solid #eee;
-            padding-top: 10px;
+            padding: 10px;
+            background: #fff;
         }
-        .list-section {
-            margin-bottom: 15px;
+        .list-group { margin-bottom: 15px; }
+        .list-group-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #0056b3;
+            background: #eef6ff;
+            padding: 5px 8px;
+            border-radius: 4px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        .list-section h5 {
-            margin: 0 0 5px 0;
-            font-size: 13px;
-            color: #333;
-            background: #eee;
-            padding: 5px;
-        }
-        .list-section ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
+        .sidebar-item {
             font-size: 11px;
+            padding: 4px 8px;
+            border-bottom: 1px solid #f5f5f5;
+            line-height: 1.3;
         }
-        .list-section li {
-            padding: 2px 5px;
-            border-bottom: 1px solid #f0f0f0;
+        .sidebar-item b { color: #333; }
+        .sidebar-country { color: #888; font-size: 10px; float: right; }
+
+        /* --- MODAL (POPUP) STYLES --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 2000;
+            display: none; justify-content: center; align-items: center;
         }
+        .modal-box {
+            background: white; width: 600px; max-width: 90%; max-height: 85vh;
+            border-radius: 8px; display: flex; flex-direction: column;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            animation: fadeIn 0.2s ease-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         
-        /* Popup Styles */
-        .leaflet-popup-content {
-            font-size: 13px;
-            line-height: 1.4;
-            max-height: 300px;
-            overflow-y: auto;
-            width: 280px;
+        .modal-header {
+            padding: 15px 20px; border-bottom: 1px solid #eee;
+            display: flex; justify-content: space-between; align-items: center;
+            background: #f8f9fa; border-radius: 8px 8px 0 0;
         }
-        .popup-header {
-            font-weight: bold;
-            font-size: 15px;
-            margin-bottom: 8px;
-            border-bottom: 1px solid #ccc;
-            padding-bottom: 5px;
-            color: #333;
+        .modal-title { font-size: 18px; font-weight: bold; color: #333; }
+        .modal-close { cursor: pointer; font-size: 24px; color: #888; line-height: 1; }
+        .modal-close:hover { color: #333; }
+        
+        .modal-content { padding: 20px; overflow-y: auto; font-size: 13px; line-height: 1.5; }
+        
+        /* Modal Content Styling */
+        .modal-section-title {
+            font-size: 14px; font-weight: bold; color: #0056b3;
+            margin-top: 15px; margin-bottom: 5px; border-bottom: 2px solid #eef6ff;
+            padding-bottom: 2px;
         }
-        .partner-list { list-style: none; padding: 0; margin: 0; }
-        .partner-list li { margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px dotted #eee; }
+        .modal-subsection { margin-left: 10px; margin-bottom: 10px; }
+        .modal-subsection-title { font-weight: bold; color: #555; margin-bottom: 3px; font-size: 13px; margin-top: 8px;}
+        .modal-list { list-style: none; padding: 0; margin: 0; }
+        .modal-list li { padding: 3px 0; border-bottom: 1px dashed #eee; display: flex; justify-content: space-between;}
+        .modal-list li:last-child { border-bottom: none; }
+
+        /* Popup on Map */
         .tag {
-            display: inline-block;
-            padding: 2px 5px;
-            border-radius: 3px;
-            font-size: 10px;
-            color: white;
-            font-weight: bold;
-            margin-left: 5px;
+            display: inline-block; padding: 2px 5px; border-radius: 3px;
+            font-size: 10px; color: white; font-weight: bold; margin-left: 5px;
         }
         .tag-current { background-color: #0056b3; } 
         .tag-candidate { background-color: #5bc0de; color: #fff; } 
@@ -135,18 +167,28 @@
 
 <div id="map"></div>
 
+<div id="infoModal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div class="modal-title" id="modalTitle">Details</div>
+            <div class="modal-close" onclick="closeModal()">&times;</div>
+        </div>
+        <div class="modal-content" id="modalBody"></div>
+    </div>
+</div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 <script>
     // --- Configuration ---
-    const COLOR_CURRENT = "#0056b3";    // Standard Blue
-    const COLOR_CANDIDATE = "#88CCEE";  // Light Blue
-    const COLOR_BOTH = "#2A2A72";       // Deep Blue/Indigo (Overlap)
-    const COLOR_DEFAULT = "#dddddd";    // Grey
+    const COLOR_CURRENT = "#0056b3";    
+    const COLOR_CANDIDATE = "#88CCEE"; 
+    const COLOR_BOTH = "#2A2A72";     
+    const COLOR_DEFAULT = "#dddddd";   
 
-    // --- Continent Mapping Helper ---
-    // Maps countries to continents for stats calculation
+    // --- Continent Data ---
     const continentMap = {
+        // Europe
         "Italy": "Europe", "Spain": "Europe", "Belgium": "Europe", "Estonia": "Europe", 
         "Portugal": "Europe", "Bulgaria": "Europe", "Hungary": "Europe", "Croatia": "Europe", 
         "Netherlands": "Europe", "France": "Europe", "Austria": "Europe", "Greece": "Europe", 
@@ -155,6 +197,7 @@
         "Kosovo": "Europe", "Sweden": "Europe", "Finland": "Europe", "Norway": "Europe", 
         "Denmark": "Europe", "Poland": "Europe", "Bosnia and Herzegovina": "Europe", 
         "Turkey": "Europe", "Albania": "Europe", "Germany": "Europe",
+        // Others
         "Australia": "Oceania",
         "United Arab Emirates": "Asia", "South Korea": "Asia",
         "Morocco": "Africa", "Egypt": "Africa",
@@ -163,9 +206,9 @@
         "Guatemala": "North America"
     };
 
-    // --- Data Source ---
+    // --- PARTNER DATA ---
     const partnerData = {
-        // --- Current & Mixed Partners ---
+        // --- Full Partners ---
         "Italy": [
             {code: "POLI.d", name: "POLI.DESIGN S.C.R.L.", type: "Current Partner"},
             {code: "POLIMI", name: "POLITECNICO DI MILANO", type: "Current Partner"},
@@ -219,7 +262,6 @@
             {code: "BME", name: "BUDAPESTI MUSZAKI ES GAZDASAGTUDOMANYI EGYETEM", type: "Current Partner"},
             {code: "UP", name: "University of Pecs", type: "Current Associated"}
         ],
-        // --- Current Partners Only ---
         "Croatia": [
             {code: "FIDIT", name: "SVEUCILISTE U RIJECI", type: "Current Partner"},
             {code: "EFRI", name: "SVEUCILISTE U RIJECI EKONOMSKI FAKULTET", type: "Current Partner"}
@@ -241,17 +283,13 @@
         "Serbia": [{code: "E.INT", name: "GORAN PASTROVIC", type: "Current Partner"}],
         "Montenegro": [{code: "ReSPA", name: "ReSPA", type: "Current Associated"}],
 
-        // --- Candidates Only ---
+        // --- Candidates ---
         "Slovenia": [
             {code: "JSI", name: "Jožef Stefan Institute", type: "Candidate Associated"},
             {code: "E-zavod", name: "E-zavod", type: "Candidate Associated"}
         ],
-        "Lithuania": [
-            {code: "Visionary", name: "Visionary Analytics (UAB)", type: "Candidate Associated"}
-        ],
-        "Kosovo": [
-            {code: "Customs", name: "Kosovo Customs", type: "Candidate Associated"}
-        ],
+        "Lithuania": [{code: "Visionary", name: "Visionary Analytics (UAB)", type: "Candidate Associated"}],
+        "Kosovo": [{code: "Customs", name: "Kosovo Customs", type: "Candidate Associated"}],
         "Sweden": [
             {code: "Experio", name: "Region Värmland / Experio Lab", type: "Candidate Associated"},
             {code: "Linköping", name: "Linköping University", type: "Candidate Associated"}
@@ -277,16 +315,10 @@
         "Turkey": [{code: "Galatasaray", name: "University Galatasaray - Faculty of Law", type: "Candidate Associated"}],
         "Albania": [{code: "IAM", name: "Institute for Albanian Municipalities", type: "Candidate Associated"}],
         
-        // --- Global Candidates ---
-        "Australia": [
-            {code: "EAC", name: "Ethical AI Consulting Pty Ltd", type: "Candidate Associated"}
-        ],
-        "United Arab Emirates": [
-            {code: "CFG", name: "Center for the Future of Government (MBRSG)", type: "Candidate Associated"}
-        ],
+        "Australia": [{code: "EAC", name: "Ethical AI Consulting Pty Ltd", type: "Candidate Associated"}],
+        "United Arab Emirates": [{code: "CFG", name: "Center for the Future of Government (MBRSG)", type: "Candidate Associated"}],
         "South Korea": [{code: "IFG", name: "Institute for Future Government, Yonsei University", type: "Candidate Associated"}],
         
-        // --- Africa & Americas ---
         "Morocco": [
             {code: "ENSIAS", name: "École Nationale Supérieure d’Informatique et d’Analyse des Systèmes", type: "Candidate Associated"},
             {code: "Intilaka", name: "Association al Intilaka", type: "Candidate Associated"}
@@ -304,42 +336,149 @@
         "Bolivia": [{code: "UASB", name: "Universidad Andina Simón Bolívar (Andean Community)", type: "Candidate Associated"}],
     };
 
-    // --- Statistics Calculation ---
+    // --- Stats Logic ---
+    let appStats = null;
+
     function calculateStats() {
         let stats = {
-            currentPartners: 0,
-            associatedPartners: 0,
-            candidatePartners: 0,
+            currentSet: new Set(),
+            assocSet: new Set(),
+            candidateSet: new Set(),
             countries: 0,
             continents: new Set(),
-            lists: {
-                current: [],
-                associated: [],
-                candidate: []
+            data: {
+                full: {},
+                assoc: {},
+                candidates: {} 
             }
         };
 
         for (const [country, partners] of Object.entries(partnerData)) {
             stats.countries++;
+            const cont = continentMap[country] || "Other";
+            stats.continents.add(cont);
+
+            // Init containers
+            if (!stats.data.full[country]) stats.data.full[country] = [];
+            if (!stats.data.assoc[country]) stats.data.assoc[country] = [];
             
-            // Count continent
-            const cont = continentMap[country];
-            if (cont) stats.continents.add(cont);
+            // For Candidates, group by Continent first
+            if (!stats.data.candidates[cont]) stats.data.candidates[cont] = {};
+            if (!stats.data.candidates[cont][country]) stats.data.candidates[cont][country] = [];
 
             partners.forEach(p => {
                 if (p.type === "Current Partner") {
-                    stats.currentPartners++;
-                    stats.lists.current.push(`${p.name} (${p.code}) - ${country}`);
+                    stats.currentSet.add(p.code); // Use Set to avoid duplicates if any
+                    stats.data.full[country].push(p);
                 } else if (p.type === "Current Associated") {
-                    stats.associatedPartners++;
-                    stats.lists.associated.push(`${p.name} (${p.code}) - ${country}`);
+                    stats.assocSet.add(p.code);
+                    stats.data.assoc[country].push(p);
                 } else if (p.type === "Candidate Associated") {
-                    stats.candidatePartners++;
-                    stats.lists.candidate.push(`${p.name} (${p.code}) - ${country}`);
+                    stats.candidateSet.add(p.code);
+                    stats.data.candidates[cont][country].push(p);
                 }
             });
         }
         return stats;
+    }
+
+    // --- Modal Logic ---
+    function openModal(type) {
+        const stats = appStats;
+        let title = "";
+        let html = "";
+
+        if (type === 'full') {
+            title = "Full Partners (" + stats.currentSet.size + ")";
+            html = `<p>List of Full Partners divided by country:</p>`;
+            for (const [country, list] of Object.entries(stats.data.full)) {
+                if (list.length === 0) continue;
+                html += `<div class="modal-section-title">${country}</div><ul class="modal-list">`;
+                list.forEach(p => html += `<li><span>${p.name}</span> <b>${p.code}</b></li>`);
+                html += `</ul>`;
+            }
+        } 
+        else if (type === 'assoc') {
+            title = "Associated Partners (" + stats.assocSet.size + ")";
+            html = `<p>List of Associated Partners divided by country:</p>`;
+            for (const [country, list] of Object.entries(stats.data.assoc)) {
+                if (list.length === 0) continue;
+                html += `<div class="modal-section-title">${country}</div><ul class="modal-list">`;
+                list.forEach(p => html += `<li><span>${p.name}</span> <b>${p.code}</b></li>`);
+                html += `</ul>`;
+            }
+        }
+        else if (type === 'candidate') {
+            title = "Candidate Associated Partners (" + stats.candidateSet.size + ")";
+            html = `<p>Candidates divided by Continent and Country:</p>`;
+            
+            // Order Continents
+            const continents = Object.keys(stats.data.candidates).sort();
+            
+            continents.forEach(cont => {
+                const countries = stats.data.candidates[cont];
+                let hasData = false;
+                // Check if continent has data
+                for (let c in countries) if (countries[c].length > 0) hasData = true;
+                
+                if (hasData) {
+                    html += `<div class="modal-section-title" style="color:#333; border-bottom:2px solid #333; margin-top:20px;">${cont}</div>`;
+                    for (const [country, list] of Object.entries(countries)) {
+                        if (list.length === 0) continue;
+                        html += `<div class="modal-subsection-title">${country}</div><ul class="modal-list">`;
+                        list.forEach(p => html += `<li><span>${p.name}</span> <b>${p.code}</b></li>`);
+                        html += `</ul>`;
+                    }
+                }
+            });
+        }
+        else if (type === 'countries') {
+            title = "Countries Involved (" + stats.countries + ")";
+            html = `<p>Countries divided by Continent:</p>`;
+            const groups = {};
+            for (const country of Object.keys(partnerData).sort()) {
+                const cont = continentMap[country] || "Other";
+                if (!groups[cont]) groups[cont] = [];
+                groups[cont].push(country);
+            }
+            for (const [cont, list] of Object.entries(groups)) {
+                html += `<div class="modal-section-title">${cont}</div><div class="modal-subsection">${list.join(', ')}</div>`;
+            }
+        }
+        else if (type === 'continents') {
+            title = "Continents (" + stats.continents.size + ")";
+            html = `<p>Overview of activity by continent:</p>`;
+            const groups = {};
+            for (const [country, partners] of Object.entries(partnerData)) {
+                const cont = continentMap[country] || "Other";
+                if (!groups[cont]) groups[cont] = {countries: [], partners: 0};
+                groups[cont].countries.push(country);
+                groups[cont].partners += partners.length;
+            }
+            
+            for (const [cont, data] of Object.entries(groups)) {
+                html += `<div class="modal-section-title">${cont}</div>
+                         <div class="modal-subsection">
+                            <b>${data.countries.length} Countries:</b> ${data.countries.join(', ')}<br>
+                            <b>${data.partners} Entities Involved</b>
+                         </div>`;
+            }
+        }
+
+        document.getElementById('modalTitle').innerText = title;
+        document.getElementById('modalBody').innerHTML = html;
+        document.getElementById('infoModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('infoModal').style.display = 'none';
+    }
+
+    // Close modal on outside click
+    window.onclick = function(event) {
+        if (event.target == document.getElementById('infoModal')) {
+            closeModal();
+        }
     }
 
     // --- Map Logic ---
@@ -379,7 +518,7 @@
         return html;
     }
 
-    // --- Init Map ---
+    // --- Initialize Map ---
     const map = L.map('map').setView([20.0, 10.0], 2); 
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
@@ -388,7 +527,6 @@
         maxZoom: 19
     }).addTo(map);
 
-    // Fetch Data
     fetch('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json')
         .then(response => response.json())
         .then(data => {
@@ -396,7 +534,6 @@
                 style: function(feature) {
                     const name = feature.properties.name;
                     let key = name;
-
                     if (name === "Republic of Korea") key = "South Korea"; 
                     if (name === "Republic of Serbia") key = "Serbia";
                     if (name === "The Netherlands") key = "Netherlands";
@@ -416,13 +553,11 @@
                 onEachFeature: function(feature, layer) {
                     const name = feature.properties.name;
                     let key = name;
-                    
                     if (name === "Republic of Korea") key = "South Korea"; 
                     if (name === "Republic of Serbia") key = "Serbia";
                     if (name === "The Netherlands") key = "Netherlands";
                     
                     const partners = partnerData[key];
-
                     if (partners) {
                         layer.bindPopup(getPopupContent(key, partners));
                         layer.on({
@@ -441,56 +576,139 @@
             }).addTo(map);
         });
 
-    // --- Add Stats Panel ---
+    // --- UI Logic ---
+    appStats = calculateStats(); // Calculate once
+
     var statsControl = L.control({position: 'topright'});
 
     statsControl.onAdd = function (map) {
         var div = L.DomUtil.create('div', 'info stats');
-        var stats = calculateStats();
+        div.id = 'projectOverview';
         
-        // Build HTML
+        // Helper to generate sidebar list items cleanly
+        const createSidebarList = (set, dataObj, type) => {
+            let html = "";
+            // We want strict ordering: Continent -> Country
+            const countries = Object.keys(dataObj).sort();
+            
+            // Group by Continent for better readability
+            const grouped = {};
+            countries.forEach(c => {
+                const cont = continentMap[c] || "Other";
+                if(!grouped[cont]) grouped[cont] = [];
+                // Filter only partners of specific type (needed for Full/Assoc which share object structure)
+                const items = dataObj[c].filter(p => {
+                    if(type === 'full') return p.type === 'Current Partner';
+                    if(type === 'assoc') return p.type === 'Current Associated';
+                    return true;
+                });
+                if(items.length > 0) grouped[cont].push({country: c, items: items});
+            });
+
+            for (const [cont, countryList] of Object.entries(grouped)) {
+                if(countryList.length === 0) continue;
+                html += `<div style="font-size:10px; font-weight:bold; color:#888; margin-top:5px; margin-left:5px;">${cont}</div>`;
+                countryList.forEach(obj => {
+                    obj.items.forEach(p => {
+                         html += `<div class="sidebar-item"><b>${p.code}</b> ${p.name.substring(0,25)}${p.name.length>25?'...':''} <span class="sidebar-country">${obj.country}</span></div>`;
+                    });
+                });
+            }
+            return html;
+        };
+
+        // For Candidates (different data structure in stats object)
+        const createCandidateSidebar = () => {
+            let html = "";
+            const continents = Object.keys(appStats.data.candidates).sort();
+            continents.forEach(cont => {
+                const countries = appStats.data.candidates[cont];
+                let hasItems = false;
+                let innerHtml = "";
+                for(const [c, list] of Object.entries(countries)) {
+                    if(list.length > 0) {
+                        hasItems = true;
+                        list.forEach(p => {
+                            innerHtml += `<div class="sidebar-item"><b>${p.code}</b> ${p.name.substring(0,25)}${p.name.length>25?'...':''} <span class="sidebar-country">${c}</span></div>`;
+                        });
+                    }
+                }
+                if(hasItems) {
+                    html += `<div style="font-size:10px; font-weight:bold; color:#888; margin-top:5px; margin-left:5px;">${cont}</div>` + innerHtml;
+                }
+            });
+            return html;
+        }
+
         var html = `
-            <div class="stats-header">Project Statistics</div>
+            <div class="stats-header" onclick="toggleStats()">
+                <span>Project Overview</span>
+                <span class="toggle-btn" id="toggleIcon">−</span>
+            </div>
             <div class="stats-grid">
-                <div class="stat-item"><span class="stat-number">${stats.currentPartners}</span><span class="stat-label">Partners</span></div>
-                <div class="stat-item"><span class="stat-number">${stats.associatedPartners}</span><span class="stat-label">Assoc. Partners</span></div>
-                <div class="stat-item"><span class="stat-number">${stats.candidatePartners}</span><span class="stat-label">Candidates</span></div>
-                <div class="stat-item"><span class="stat-number">${stats.countries}</span><span class="stat-label">Countries</span></div>
-                <div class="stat-item" style="grid-column: span 2"><span class="stat-number">${stats.continents.size}</span><span class="stat-label">Continents</span></div>
+                <div class="stat-item" onclick="openModal('full')">
+                    <span class="stat-number">${appStats.currentSet.size}</span>
+                    <span class="stat-label">Full Partners</span>
+                </div>
+                <div class="stat-item" onclick="openModal('assoc')">
+                    <span class="stat-number">${appStats.assocSet.size}</span>
+                    <span class="stat-label">Assoc. Partners</span>
+                </div>
+                <div class="stat-item" onclick="openModal('candidate')">
+                    <span class="stat-number">${appStats.candidateSet.size}</span>
+                    <span class="stat-label">Candidate Assoc. Partners</span>
+                </div>
+                <div class="stat-item" onclick="openModal('countries')">
+                    <span class="stat-number">${appStats.countries}</span>
+                    <span class="stat-label">Countries</span>
+                </div>
+                <div class="stat-item" style="grid-column: span 2" onclick="openModal('continents')">
+                    <span class="stat-number">${appStats.continents.size}</span>
+                    <span class="stat-label">Continents</span>
+                </div>
             </div>
             
             <div class="partner-scroll">
-                <div class="list-section">
-                    <h5>Current Partners</h5>
-                    <ul>${stats.lists.current.map(s => `<li>${s}</li>`).join('')}</ul>
+                <div class="list-group">
+                    <div class="list-group-title">Full Partners</div>
+                    ${createSidebarList(appStats.currentSet, appStats.data.full, 'full')}
                 </div>
-                <div class="list-section">
-                    <h5>Associated Partners</h5>
-                    <ul>${stats.lists.associated.map(s => `<li>${s}</li>`).join('')}</ul>
+                <div class="list-group">
+                    <div class="list-group-title">Assoc. Partners</div>
+                    ${createSidebarList(appStats.assocSet, appStats.data.assoc, 'assoc')}
                 </div>
-                <div class="list-section">
-                    <h5>Candidate Partners</h5>
-                    <ul>${stats.lists.candidate.map(s => `<li>${s}</li>`).join('')}</ul>
+                <div class="list-group">
+                    <div class="list-group-title">Candidate Assoc. Partners</div>
+                    ${createCandidateSidebar()}
                 </div>
             </div>
         `;
         div.innerHTML = html;
-        
-        // Disable map movement when scrolling the list
         L.DomEvent.disableScrollPropagation(div);
         L.DomEvent.disableClickPropagation(div);
-        
         return div;
     };
     statsControl.addTo(map);
+
+    function toggleStats() {
+        const div = document.getElementById('projectOverview');
+        const icon = document.getElementById('toggleIcon');
+        if (div.classList.contains('minimized')) {
+            div.classList.remove('minimized');
+            icon.innerText = "−";
+        } else {
+            div.classList.add('minimized');
+            icon.innerText = "+";
+        }
+    }
 
     // --- Legend ---
     var legend = L.control({position: 'bottomright'});
     legend.onAdd = function (map) {
         var div = L.DomUtil.create('div', 'legend');
         div.innerHTML += '<h4>Legend</h4>';
-        div.innerHTML += '<i style="background:' + COLOR_CURRENT + '"></i> Current Partners<br>';
-        div.innerHTML += '<i style="background:' + COLOR_CANDIDATE + '"></i> Candidate Partners<br>';
+        div.innerHTML += '<i style="background:' + COLOR_CURRENT + '"></i> Full Partners<br>';
+        div.innerHTML += '<i style="background:' + COLOR_CANDIDATE + '"></i> Candidate Assoc. Partners<br>';
         div.innerHTML += '<i style="background:' + COLOR_BOTH + '"></i> Covered by Both<br>';
         return div;
     };
