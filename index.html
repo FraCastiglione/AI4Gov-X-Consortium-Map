@@ -35,15 +35,17 @@
             padding: 0;
             border-radius: 8px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            width: 320px;
+            width: 340px;
             max-height: 90vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
             transition: all 0.3s ease;
+            margin-top: 10px;
+            margin-right: 10px;
         }
         .info.stats.minimized {
-            width: 200px;
+            width: 220px;
             height: auto;
         }
         .stats-header {
@@ -56,6 +58,7 @@
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
+            user-select: none;
         }
         .stats-header:hover { background: #004494; }
         .toggle-btn { font-size: 18px; font-weight: bold; line-height: 1; }
@@ -124,7 +127,7 @@
             display: none; justify-content: center; align-items: center;
         }
         .modal-box {
-            background: white; width: 600px; max-width: 90%; max-height: 85vh;
+            background: white; width: 650px; max-width: 90%; max-height: 85vh;
             border-radius: 8px; display: flex; flex-direction: column;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
             animation: fadeIn 0.2s ease-out;
@@ -148,13 +151,19 @@
             margin-top: 15px; margin-bottom: 5px; border-bottom: 2px solid #eef6ff;
             padding-bottom: 2px;
         }
-        .modal-subsection { margin-left: 10px; margin-bottom: 10px; }
-        .modal-subsection-title { font-weight: bold; color: #555; margin-bottom: 3px; font-size: 13px; margin-top: 8px;}
+        .modal-continent-header {
+            font-size: 15px; font-weight: bold; color: #333; background: #eee;
+            padding: 5px 10px; margin-top: 20px; border-radius: 4px;
+        }
+        .modal-subsection-title { font-weight: bold; color: #555; margin-bottom: 3px; font-size: 13px; margin-top: 8px; margin-left: 10px;}
         .modal-list { list-style: none; padding: 0; margin: 0; }
-        .modal-list li { padding: 3px 0; border-bottom: 1px dashed #eee; display: flex; justify-content: space-between;}
-        .modal-list li:last-child { border-bottom: none; }
+        .modal-list li { padding: 4px 0; border-bottom: 1px dashed #eee; display: flex; justify-content: space-between; align-items: center;}
+        .modal-list li span { flex-grow: 1; padding-right: 10px; }
+        .modal-list li b { white-space: nowrap; }
 
         /* Popup on Map */
+        .leaflet-popup-content { font-size: 13px; line-height: 1.4; width: 280px; }
+        .popup-header { font-weight: bold; font-size: 15px; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 5px;}
         .tag {
             display: inline-block; padding: 2px 5px; border-radius: 3px;
             font-size: 10px; color: white; font-weight: bold; margin-left: 5px;
@@ -186,7 +195,7 @@
     const COLOR_BOTH = "#2A2A72";     
     const COLOR_DEFAULT = "#dddddd";   
 
-    // --- Continent Data ---
+    // --- Continent Mapping ---
     const continentMap = {
         // Europe
         "Italy": "Europe", "Spain": "Europe", "Belgium": "Europe", "Estonia": "Europe", 
@@ -197,10 +206,13 @@
         "Kosovo": "Europe", "Sweden": "Europe", "Finland": "Europe", "Norway": "Europe", 
         "Denmark": "Europe", "Poland": "Europe", "Bosnia and Herzegovina": "Europe", 
         "Turkey": "Europe", "Albania": "Europe", "Germany": "Europe",
-        // Others
+        // Oceania
         "Australia": "Oceania",
+        // Asia
         "United Arab Emirates": "Asia", "South Korea": "Asia",
+        // Africa
         "Morocco": "Africa", "Egypt": "Africa",
+        // Americas
         "Argentina": "South America", "Ecuador": "South America", "Colombia": "South America", 
         "Peru": "South America", "Bolivia": "South America", "Costa Rica": "North America", 
         "Guatemala": "North America"
@@ -346,11 +358,7 @@
             candidateSet: new Set(),
             countries: 0,
             continents: new Set(),
-            data: {
-                full: {},
-                assoc: {},
-                candidates: {} 
-            }
+            data: { full: {}, assoc: {}, candidates: {} }
         };
 
         for (const [country, partners] of Object.entries(partnerData)) {
@@ -358,17 +366,15 @@
             const cont = continentMap[country] || "Other";
             stats.continents.add(cont);
 
-            // Init containers
+            // Init Data Structure
             if (!stats.data.full[country]) stats.data.full[country] = [];
             if (!stats.data.assoc[country]) stats.data.assoc[country] = [];
-            
-            // For Candidates, group by Continent first
             if (!stats.data.candidates[cont]) stats.data.candidates[cont] = {};
             if (!stats.data.candidates[cont][country]) stats.data.candidates[cont][country] = [];
 
             partners.forEach(p => {
                 if (p.type === "Current Partner") {
-                    stats.currentSet.add(p.code); // Use Set to avoid duplicates if any
+                    stats.currentSet.add(p.code);
                     stats.data.full[country].push(p);
                 } else if (p.type === "Current Associated") {
                     stats.assocSet.add(p.code);
@@ -389,8 +395,8 @@
         let html = "";
 
         if (type === 'full') {
-            title = "Full Partners (" + stats.currentSet.size + ")";
-            html = `<p>List of Full Partners divided by country:</p>`;
+            title = `Full Partners (${stats.currentSet.size})`;
+            html = `<p><b>Full Partners by Country:</b></p>`;
             for (const [country, list] of Object.entries(stats.data.full)) {
                 if (list.length === 0) continue;
                 html += `<div class="modal-section-title">${country}</div><ul class="modal-list">`;
@@ -399,8 +405,8 @@
             }
         } 
         else if (type === 'assoc') {
-            title = "Associated Partners (" + stats.assocSet.size + ")";
-            html = `<p>List of Associated Partners divided by country:</p>`;
+            title = `Associated Partners (${stats.assocSet.size})`;
+            html = `<p><b>Associated Partners by Country:</b></p>`;
             for (const [country, list] of Object.entries(stats.data.assoc)) {
                 if (list.length === 0) continue;
                 html += `<div class="modal-section-title">${country}</div><ul class="modal-list">`;
@@ -409,23 +415,20 @@
             }
         }
         else if (type === 'candidate') {
-            title = "Candidate Associated Partners (" + stats.candidateSet.size + ")";
-            html = `<p>Candidates divided by Continent and Country:</p>`;
+            title = `Candidate Associated Partners (${stats.candidateSet.size})`;
+            html = `<p><b>Candidates by Continent & Country:</b></p>`;
             
-            // Order Continents
             const continents = Object.keys(stats.data.candidates).sort();
-            
             continents.forEach(cont => {
                 const countries = stats.data.candidates[cont];
                 let hasData = false;
-                // Check if continent has data
                 for (let c in countries) if (countries[c].length > 0) hasData = true;
                 
                 if (hasData) {
-                    html += `<div class="modal-section-title" style="color:#333; border-bottom:2px solid #333; margin-top:20px;">${cont}</div>`;
+                    html += `<div class="modal-continent-header">${cont}</div>`;
                     for (const [country, list] of Object.entries(countries)) {
                         if (list.length === 0) continue;
-                        html += `<div class="modal-subsection-title">${country}</div><ul class="modal-list">`;
+                        html += `<div class="modal-subsection-title">${country}</div><ul class="modal-list" style="margin-left:15px;">`;
                         list.forEach(p => html += `<li><span>${p.name}</span> <b>${p.code}</b></li>`);
                         html += `</ul>`;
                     }
@@ -433,8 +436,8 @@
             });
         }
         else if (type === 'countries') {
-            title = "Countries Involved (" + stats.countries + ")";
-            html = `<p>Countries divided by Continent:</p>`;
+            title = `Countries Involved (${stats.countries})`;
+            html = `<p><b>Countries by Continent:</b></p>`;
             const groups = {};
             for (const country of Object.keys(partnerData).sort()) {
                 const cont = continentMap[country] || "Other";
@@ -446,8 +449,8 @@
             }
         }
         else if (type === 'continents') {
-            title = "Continents (" + stats.continents.size + ")";
-            html = `<p>Overview of activity by continent:</p>`;
+            title = `Continents (${stats.continents.size})`;
+            html = `<p><b>Activity Overview by Continent:</b></p>`;
             const groups = {};
             for (const [country, partners] of Object.entries(partnerData)) {
                 const cont = continentMap[country] || "Other";
@@ -455,12 +458,11 @@
                 groups[cont].countries.push(country);
                 groups[cont].partners += partners.length;
             }
-            
             for (const [cont, data] of Object.entries(groups)) {
                 html += `<div class="modal-section-title">${cont}</div>
                          <div class="modal-subsection">
-                            <b>${data.countries.length} Countries:</b> ${data.countries.join(', ')}<br>
-                            <b>${data.partners} Entities Involved</b>
+                            <div>${data.countries.length} Countries involved</div>
+                            <div style="font-size:11px; color:#666; margin-top:3px;">${data.countries.join(', ')}</div>
                          </div>`;
             }
         }
@@ -474,48 +476,10 @@
         document.getElementById('infoModal').style.display = 'none';
     }
 
-    // Close modal on outside click
     window.onclick = function(event) {
         if (event.target == document.getElementById('infoModal')) {
             closeModal();
         }
-    }
-
-    // --- Map Logic ---
-    function getCountryStatus(partners) {
-        let hasCurrent = false;
-        let hasCandidate = false;
-        partners.forEach(p => {
-            if (p.type.includes("Current")) hasCurrent = true;
-            if (p.type.includes("Candidate")) hasCandidate = true;
-        });
-        if (hasCurrent && hasCandidate) return "both";
-        if (hasCurrent) return "current";
-        if (hasCandidate) return "candidate";
-        return "none";
-    }
-
-    function getColor(status) {
-        switch(status) {
-            case "current": return COLOR_CURRENT;
-            case "candidate": return COLOR_CANDIDATE;
-            case "both": return COLOR_BOTH;
-            default: return COLOR_DEFAULT;
-        }
-    }
-
-    function getPopupContent(countryName, partners) {
-        let html = `<div class="popup-header">${countryName}</div><ul class="partner-list">`;
-        partners.forEach(p => {
-            let tagClass = p.type.includes("Current") ? "tag-current" : "tag-candidate";
-            html += `<li>
-                        <b>${p.code}</b><br>
-                        ${p.name}
-                        <span class="tag ${tagClass}">${p.type === "Current Associated" ? "Assoc. Partner" : (p.type === "Candidate Associated" ? "Candidate" : "Partner")}</span>
-                     </li>`;
-        });
-        html += "</ul>";
-        return html;
     }
 
     // --- Initialize Map ---
@@ -527,6 +491,7 @@
         maxZoom: 19
     }).addTo(map);
 
+    // Fetch GeoJSON
     fetch('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json')
         .then(response => response.json())
         .then(data => {
@@ -534,21 +499,30 @@
                 style: function(feature) {
                     const name = feature.properties.name;
                     let key = name;
+                    // Fix naming mismatches
                     if (name === "Republic of Korea") key = "South Korea"; 
                     if (name === "Republic of Serbia") key = "Serbia";
                     if (name === "The Netherlands") key = "Netherlands";
                     if (name === "United Republic of Tanzania") key = "Tanzania";
                     
                     const partners = partnerData[key];
-                    const status = partners ? getCountryStatus(partners) : "none";
+                    
+                    // Determine Status
+                    let hasCurrent = false;
+                    let hasCandidate = false;
+                    if (partners) {
+                        partners.forEach(p => {
+                            if (p.type.includes("Current")) hasCurrent = true;
+                            if (p.type.includes("Candidate")) hasCandidate = true;
+                        });
+                    }
 
-                    return {
-                        fillColor: getColor(status),
-                        weight: 1,
-                        opacity: 1,
-                        color: 'white',
-                        fillOpacity: 0.7
-                    };
+                    let color = COLOR_DEFAULT;
+                    if (hasCurrent && hasCandidate) color = COLOR_BOTH;
+                    else if (hasCurrent) color = COLOR_CURRENT;
+                    else if (hasCandidate) color = COLOR_CANDIDATE;
+
+                    return { fillColor: color, weight: 1, opacity: 1, color: 'white', fillOpacity: 0.7 };
                 },
                 onEachFeature: function(feature, layer) {
                     const name = feature.properties.name;
@@ -559,17 +533,18 @@
                     
                     const partners = partnerData[key];
                     if (partners) {
-                        layer.bindPopup(getPopupContent(key, partners));
+                        let popupHtml = `<div class="popup-header">${key}</div><ul class="partner-list">`;
+                        partners.forEach(p => {
+                            let tagClass = p.type.includes("Current") ? "tag-current" : "tag-candidate";
+                            let tagName = p.type === "Current Associated" ? "Assoc. Partner" : (p.type === "Candidate Associated" ? "Candidate" : "Partner");
+                            popupHtml += `<li><b>${p.code}</b><br>${p.name}<span class="tag ${tagClass}">${tagName}</span></li>`;
+                        });
+                        popupHtml += "</ul>";
+                        layer.bindPopup(popupHtml);
+                        
                         layer.on({
-                            mouseover: function(e) {
-                                var layer = e.target;
-                                layer.setStyle({ weight: 2, color: '#666', fillOpacity: 0.9 });
-                                layer.openPopup();
-                            },
-                            mouseout: function(e) {
-                                var layer = e.target;
-                                layer.setStyle({ weight: 1, color: 'white', fillOpacity: 0.7 });
-                            }
+                            mouseover: function(e) { e.target.setStyle({ weight: 2, color: '#666', fillOpacity: 0.9 }); e.target.openPopup(); },
+                            mouseout: function(e) { e.target.setStyle({ weight: 1, color: 'white', fillOpacity: 0.7 }); }
                         });
                     }
                 }
@@ -577,7 +552,7 @@
         });
 
     // --- UI Logic ---
-    appStats = calculateStats(); // Calculate once
+    appStats = calculateStats(); 
 
     var statsControl = L.control({position: 'topright'});
 
@@ -585,18 +560,13 @@
         var div = L.DomUtil.create('div', 'info stats');
         div.id = 'projectOverview';
         
-        // Helper to generate sidebar list items cleanly
         const createSidebarList = (set, dataObj, type) => {
             let html = "";
-            // We want strict ordering: Continent -> Country
             const countries = Object.keys(dataObj).sort();
-            
-            // Group by Continent for better readability
             const grouped = {};
             countries.forEach(c => {
                 const cont = continentMap[c] || "Other";
                 if(!grouped[cont]) grouped[cont] = [];
-                // Filter only partners of specific type (needed for Full/Assoc which share object structure)
                 const items = dataObj[c].filter(p => {
                     if(type === 'full') return p.type === 'Current Partner';
                     if(type === 'assoc') return p.type === 'Current Associated';
@@ -609,15 +579,12 @@
                 if(countryList.length === 0) continue;
                 html += `<div style="font-size:10px; font-weight:bold; color:#888; margin-top:5px; margin-left:5px;">${cont}</div>`;
                 countryList.forEach(obj => {
-                    obj.items.forEach(p => {
-                         html += `<div class="sidebar-item"><b>${p.code}</b> ${p.name.substring(0,25)}${p.name.length>25?'...':''} <span class="sidebar-country">${obj.country}</span></div>`;
-                    });
+                    obj.items.forEach(p => html += `<div class="sidebar-item"><b>${p.code}</b> ${p.name.substring(0,25)}${p.name.length>25?'...':''} <span class="sidebar-country">${obj.country}</span></div>`);
                 });
             }
             return html;
         };
 
-        // For Candidates (different data structure in stats object)
         const createCandidateSidebar = () => {
             let html = "";
             const continents = Object.keys(appStats.data.candidates).sort();
@@ -633,9 +600,7 @@
                         });
                     }
                 }
-                if(hasItems) {
-                    html += `<div style="font-size:10px; font-weight:bold; color:#888; margin-top:5px; margin-left:5px;">${cont}</div>` + innerHtml;
-                }
+                if(hasItems) html += `<div style="font-size:10px; font-weight:bold; color:#888; margin-top:5px; margin-left:5px;">${cont}</div>` + innerHtml;
             });
             return html;
         }
@@ -667,7 +632,6 @@
                     <span class="stat-label">Continents</span>
                 </div>
             </div>
-            
             <div class="partner-scroll">
                 <div class="list-group">
                     <div class="list-group-title">Full Partners</div>
