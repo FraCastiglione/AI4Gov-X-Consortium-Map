@@ -19,6 +19,7 @@
             padding: 10px;
             border-radius: 5px;
             box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
         }
         .legend i {
             width: 18px;
@@ -26,6 +27,77 @@
             float: left;
             margin-right: 8px;
             opacity: 0.9;
+        }
+        
+        /* Stats Panel Styles */
+        .info.stats {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            width: 300px;
+            max-height: 80vh; /* Prevents it from being too tall */
+            display: flex;
+            flex-direction: column;
+        }
+        .stats-header {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 5px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .stat-item {
+            text-align: center;
+            background: #f9f9f9;
+            padding: 5px;
+            border-radius: 4px;
+        }
+        .stat-number {
+            display: block;
+            font-size: 18px;
+            font-weight: bold;
+            color: #0056b3;
+        }
+        .stat-label {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        /* Scrollable List Styles */
+        .partner-scroll {
+            overflow-y: auto;
+            flex-grow: 1;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+        .list-section {
+            margin-bottom: 15px;
+        }
+        .list-section h5 {
+            margin: 0 0 5px 0;
+            font-size: 13px;
+            color: #333;
+            background: #eee;
+            padding: 5px;
+        }
+        .list-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 11px;
+        }
+        .list-section li {
+            padding: 2px 5px;
+            border-bottom: 1px solid #f0f0f0;
         }
         
         /* Popup Styles */
@@ -55,9 +127,8 @@
             font-weight: bold;
             margin-left: 5px;
         }
-        .tag-current { background-color: #0056b3; } /* Dark Blue */
-        .tag-assoc { background-color: #0056b3; opacity: 0.8; } /* Same blue */
-        .tag-candidate { background-color: #5bc0de; color: #fff; } /* Light Blue */
+        .tag-current { background-color: #0056b3; } 
+        .tag-candidate { background-color: #5bc0de; color: #fff; } 
     </style>
 </head>
 <body>
@@ -73,8 +144,26 @@
     const COLOR_BOTH = "#2A2A72";       // Deep Blue/Indigo (Overlap)
     const COLOR_DEFAULT = "#dddddd";    // Grey
 
+    // --- Continent Mapping Helper ---
+    // Maps countries to continents for stats calculation
+    const continentMap = {
+        "Italy": "Europe", "Spain": "Europe", "Belgium": "Europe", "Estonia": "Europe", 
+        "Portugal": "Europe", "Bulgaria": "Europe", "Hungary": "Europe", "Croatia": "Europe", 
+        "Netherlands": "Europe", "France": "Europe", "Austria": "Europe", "Greece": "Europe", 
+        "Romania": "Europe", "Slovakia": "Europe", "Ukraine": "Europe", "Cyprus": "Europe", 
+        "Serbia": "Europe", "Montenegro": "Europe", "Slovenia": "Europe", "Lithuania": "Europe", 
+        "Kosovo": "Europe", "Sweden": "Europe", "Finland": "Europe", "Norway": "Europe", 
+        "Denmark": "Europe", "Poland": "Europe", "Bosnia and Herzegovina": "Europe", 
+        "Turkey": "Europe", "Albania": "Europe", "Germany": "Europe",
+        "Australia": "Oceania",
+        "United Arab Emirates": "Asia", "South Korea": "Asia",
+        "Morocco": "Africa", "Egypt": "Africa",
+        "Argentina": "South America", "Ecuador": "South America", "Colombia": "South America", 
+        "Peru": "South America", "Bolivia": "South America", "Costa Rica": "North America", 
+        "Guatemala": "North America"
+    };
+
     // --- Data Source ---
-    // Mapping of Country Name to Partners List
     const partnerData = {
         // --- Current & Mixed Partners ---
         "Italy": [
@@ -89,7 +178,6 @@
         ],
         "Germany": [
             {code: "FAU", name: "FRIEDRICH-ALEXANDER-UNIVERSITAET ERLANGEN-NUERNBERG", type: "Current Partner"},
-            // ADDED: New Candidate Partner (Mixes colors to Indigo)
             {code: "TPSDA", name: "Teaching Public Service in the Digital Age c/o Interalia gGmbH", type: "Candidate Associated"}
         ],
         "Spain": [
@@ -210,23 +298,58 @@
         "Argentina": [{code: "FLACSO", name: "Facultad Latinoamerica de Ciencias Sociales", type: "Candidate Associated"}],
         "Costa Rica": [{code: "DEMUCA", name: "Fundación DEMUCA", type: "Candidate Associated"}],
         "Guatemala": [{code: "DEMUCA", name: "Fundación DEMUCA", type: "Candidate Associated"}],
-        // Andean Community Group
         "Ecuador": [{code: "UASB", name: "Universidad Andina Simón Bolívar (Andean Community)", type: "Candidate Associated"}],
         "Colombia": [{code: "UASB", name: "Universidad Andina Simón Bolívar (Andean Community)", type: "Candidate Associated"}],
         "Peru": [{code: "UASB", name: "Universidad Andina Simón Bolívar (Andean Community)", type: "Candidate Associated"}],
         "Bolivia": [{code: "UASB", name: "Universidad Andina Simón Bolívar (Andean Community)", type: "Candidate Associated"}],
     };
 
-    // --- Logic to determine country status ---
+    // --- Statistics Calculation ---
+    function calculateStats() {
+        let stats = {
+            currentPartners: 0,
+            associatedPartners: 0,
+            candidatePartners: 0,
+            countries: 0,
+            continents: new Set(),
+            lists: {
+                current: [],
+                associated: [],
+                candidate: []
+            }
+        };
+
+        for (const [country, partners] of Object.entries(partnerData)) {
+            stats.countries++;
+            
+            // Count continent
+            const cont = continentMap[country];
+            if (cont) stats.continents.add(cont);
+
+            partners.forEach(p => {
+                if (p.type === "Current Partner") {
+                    stats.currentPartners++;
+                    stats.lists.current.push(`${p.name} (${p.code}) - ${country}`);
+                } else if (p.type === "Current Associated") {
+                    stats.associatedPartners++;
+                    stats.lists.associated.push(`${p.name} (${p.code}) - ${country}`);
+                } else if (p.type === "Candidate Associated") {
+                    stats.candidatePartners++;
+                    stats.lists.candidate.push(`${p.name} (${p.code}) - ${country}`);
+                }
+            });
+        }
+        return stats;
+    }
+
+    // --- Map Logic ---
     function getCountryStatus(partners) {
         let hasCurrent = false;
         let hasCandidate = false;
-        
         partners.forEach(p => {
             if (p.type.includes("Current")) hasCurrent = true;
             if (p.type.includes("Candidate")) hasCandidate = true;
         });
-
         if (hasCurrent && hasCandidate) return "both";
         if (hasCurrent) return "current";
         if (hasCandidate) return "candidate";
@@ -256,8 +379,7 @@
         return html;
     }
 
-    // --- Map Initialization ---
-    // ZOOM SET TO 2 for GLOBAL VIEW
+    // --- Init Map ---
     const map = L.map('map').setView([20.0, 10.0], 2); 
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
@@ -266,8 +388,7 @@
         maxZoom: 19
     }).addTo(map);
 
-    // Fetch GeoJSON for World Countries
-    // Using the original reliable source
+    // Fetch Data
     fetch('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json')
         .then(response => response.json())
         .then(data => {
@@ -276,7 +397,6 @@
                     const name = feature.properties.name;
                     let key = name;
 
-                    // --- NAME MAPPING FIXES ---
                     if (name === "Republic of Korea") key = "South Korea"; 
                     if (name === "Republic of Serbia") key = "Serbia";
                     if (name === "The Netherlands") key = "Netherlands";
@@ -297,7 +417,6 @@
                     const name = feature.properties.name;
                     let key = name;
                     
-                    // --- NAME MAPPING FIXES (Must match style function) ---
                     if (name === "Republic of Korea") key = "South Korea"; 
                     if (name === "Republic of Serbia") key = "Serbia";
                     if (name === "The Netherlands") key = "Netherlands";
@@ -322,18 +441,59 @@
             }).addTo(map);
         });
 
+    // --- Add Stats Panel ---
+    var statsControl = L.control({position: 'topright'});
+
+    statsControl.onAdd = function (map) {
+        var div = L.DomUtil.create('div', 'info stats');
+        var stats = calculateStats();
+        
+        // Build HTML
+        var html = `
+            <div class="stats-header">Project Statistics</div>
+            <div class="stats-grid">
+                <div class="stat-item"><span class="stat-number">${stats.currentPartners}</span><span class="stat-label">Partners</span></div>
+                <div class="stat-item"><span class="stat-number">${stats.associatedPartners}</span><span class="stat-label">Assoc. Partners</span></div>
+                <div class="stat-item"><span class="stat-number">${stats.candidatePartners}</span><span class="stat-label">Candidates</span></div>
+                <div class="stat-item"><span class="stat-number">${stats.countries}</span><span class="stat-label">Countries</span></div>
+                <div class="stat-item" style="grid-column: span 2"><span class="stat-number">${stats.continents.size}</span><span class="stat-label">Continents</span></div>
+            </div>
+            
+            <div class="partner-scroll">
+                <div class="list-section">
+                    <h5>Current Partners</h5>
+                    <ul>${stats.lists.current.map(s => `<li>${s}</li>`).join('')}</ul>
+                </div>
+                <div class="list-section">
+                    <h5>Associated Partners</h5>
+                    <ul>${stats.lists.associated.map(s => `<li>${s}</li>`).join('')}</ul>
+                </div>
+                <div class="list-section">
+                    <h5>Candidate Partners</h5>
+                    <ul>${stats.lists.candidate.map(s => `<li>${s}</li>`).join('')}</ul>
+                </div>
+            </div>
+        `;
+        div.innerHTML = html;
+        
+        // Disable map movement when scrolling the list
+        L.DomEvent.disableScrollPropagation(div);
+        L.DomEvent.disableClickPropagation(div);
+        
+        return div;
+    };
+    statsControl.addTo(map);
+
     // --- Legend ---
     var legend = L.control({position: 'bottomright'});
-
     legend.onAdd = function (map) {
         var div = L.DomUtil.create('div', 'legend');
-        div.innerHTML += '<h4>AI4Gov-X Network</h4>';
+        div.innerHTML += '<h4>Legend</h4>';
         div.innerHTML += '<i style="background:' + COLOR_CURRENT + '"></i> Current Partners<br>';
         div.innerHTML += '<i style="background:' + COLOR_CANDIDATE + '"></i> Candidate Partners<br>';
         div.innerHTML += '<i style="background:' + COLOR_BOTH + '"></i> Covered by Both<br>';
         return div;
     };
-
     legend.addTo(map);
 
 </script>
