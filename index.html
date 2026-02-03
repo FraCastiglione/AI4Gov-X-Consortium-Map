@@ -205,7 +205,7 @@
         "Serbia": "Europe", "Montenegro": "Europe", "Slovenia": "Europe", "Lithuania": "Europe", 
         "Kosovo": "Europe", "Sweden": "Europe", "Finland": "Europe", "Norway": "Europe", 
         "Denmark": "Europe", "Poland": "Europe", "Bosnia and Herzegovina": "Europe", 
-        "Turkey": "Europe", "Albania": "Europe", "Germany": "Europe",
+        "Turkey": "Europe", "Albania": "Europe", "Germany": "Europe", "North Macedonia": "Europe",
         // Oceania
         "Australia": "Oceania",
         // Asia
@@ -296,6 +296,7 @@
         "Montenegro": [{code: "ReSPA", name: "ReSPA", type: "Current Associated"}],
 
         // --- Candidates ---
+        "North Macedonia": [{code: "UKIM", name: "Ss Cyril and Methodius University in Skopje, Faculty of Economics", type: "Candidate Associated"}],
         "Slovenia": [
             {code: "JSI", name: "Jožef Stefan Institute", type: "Candidate Associated"},
             {code: "E-zavod", name: "E-zavod", type: "Candidate Associated"}
@@ -507,6 +508,7 @@
                     if (name === "Republic of Serbia") key = "Serbia";
                     if (name === "The Netherlands") key = "Netherlands";
                     if (name === "United Republic of Tanzania") key = "Tanzania";
+                    if (name.includes("Macedonia")) key = "North Macedonia";
                     
                     const partners = partnerData[key];
                     
@@ -533,6 +535,7 @@
                     if (name === "Republic of Korea") key = "South Korea"; 
                     if (name === "Republic of Serbia") key = "Serbia";
                     if (name === "The Netherlands") key = "Netherlands";
+                    if (name.includes("Macedonia")) key = "North Macedonia";
                     
                     const partners = partnerData[key];
                     if (partners) {
@@ -636,17 +639,17 @@
                 </div>
             </div>
             <div class="partner-scroll">
-                <div class="list-group">
-                    <div class="list-group-title">Full Partners</div>
-                    ${createSidebarList(appStats.currentSet, appStats.data.full, 'full')}
+                 <div class="list-group">
+                    <div class="list-group-title">Candidate Assoc. Partners</div>
+                    ${createCandidateSidebar()}
                 </div>
                 <div class="list-group">
                     <div class="list-group-title">Assoc. Partners</div>
                     ${createSidebarList(appStats.assocSet, appStats.data.assoc, 'assoc')}
                 </div>
                 <div class="list-group">
-                    <div class="list-group-title">Candidate Assoc. Partners</div>
-                    ${createCandidateSidebar()}
+                    <div class="list-group-title">Full Partners</div>
+                    ${createSidebarList(appStats.currentSet, appStats.data.full, 'full')}
                 </div>
             </div>
         `;
