@@ -207,7 +207,7 @@
         "Kosovo": "Europe", "Sweden": "Europe", "Finland": "Europe", "Norway": "Europe", 
         "Denmark": "Europe", "Poland": "Europe", "Bosnia and Herzegovina": "Europe", 
         "Turkey": "Europe", "Albania": "Europe", "Germany": "Europe", "North Macedonia": "Europe",
-        "Latvia": "Europe",
+        "Latvia": "Europe", "Ireland": "Europe",
         // Oceania
         "Australia": "Oceania",
         // Asia
@@ -298,6 +298,7 @@
         "Montenegro": [{code: "ReSPA", name: "ReSPA", type: "Current Associated"}],
 
         // --- Candidates ---
+        "Ireland": [{code: "GALWAY", name: "University of Galway", type: "Candidate Associated"}],
         "Latvia": [{code: "ITI", name: "Information Technology Institute", type: "Candidate Associated"}],
         "North Macedonia": [{code: "UKIM", name: "Ss Cyril and Methodius University in Skopje, Faculty of Economics", type: "Candidate Associated"}],
         "Slovenia": [
@@ -512,6 +513,7 @@
                     if (name === "The Netherlands") key = "Netherlands";
                     if (name === "United Republic of Tanzania") key = "Tanzania";
                     if (name.includes("Macedonia")) key = "North Macedonia";
+                    if (name === "Ireland" || name === "Republic of Ireland") key = "Ireland"; // Fix for Ireland
                     
                     const partners = partnerData[key];
                     
@@ -539,6 +541,7 @@
                     if (name === "Republic of Serbia") key = "Serbia";
                     if (name === "The Netherlands") key = "Netherlands";
                     if (name.includes("Macedonia")) key = "North Macedonia";
+                    if (name === "Ireland" || name === "Republic of Ireland") key = "Ireland"; // Fix for Ireland
                     
                     const partners = partnerData[key];
                     if (partners) {
