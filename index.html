@@ -179,6 +179,8 @@
         .stat-item:hover { border-color: var(--blue); box-shadow: 0 2px 7px rgba(25, 35, 45, 0.1); }
         .stat-number { display: block; color: var(--blue); font-size: 20px; font-weight: 800; line-height: 1.1; }
         .stat-label { display: block; margin-top: 3px; color: #5f6973; font-size: 11px; font-weight: 700; line-height: 1.15; }
+        .coverage-label { color: #315e77; font-size: 11px; font-weight: 700; }
+        .partner-alias { color: #59636c; font-size: 11px; }
 
         .partner-scroll {
             min-height: 90px;
@@ -401,6 +403,8 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
+<script src="assets/participants.js"></script>
+<script src="assets/countries.geo.js"></script>
 <script>
     // --- Configuration ---
     const COLOR_FULL = "#0056b3";
@@ -423,7 +427,7 @@
         // Oceania
         "Australia": "Oceania",
         // Asia
-        "United Arab Emirates": "Asia", "South Korea": "Asia",
+        "United Arab Emirates": "Asia", "South Korea": "Asia", "Japan": "Asia",
         // Africa
         "Morocco": "Africa", "Egypt": "Africa",
         // Americas
@@ -432,141 +436,27 @@
         "Guatemala": "North America"
     };
 
-    // --- PARTNER DATA ---
-    const partnerData = {
-        // --- Full Partners ---
-        "Italy": [
-            {code: "POLI.d", name: "POLI.DESIGN S.C.R.L.", type: "Current Partner"},
-            {code: "POLIMI", name: "POLITECNICO DI MILANO", type: "Current Partner"},
-            {code: "UNIBS", name: "UNIVERSITA DEGLI STUDI DI BRESCIA", type: "Current Partner"},
-            {code: "UNIBO", name: "ALMA MATER STUDIORUM - UNIVERSITA DI BOLOGNA", type: "Current Partner"},
-            {code: "TUV.IT", name: "TUV THURINGEN ITALIA SRL", type: "Current Partner"},
-            {code: "COGN", name: "COGNITO S.R.L.", type: "Current Partner"},
-            {code: "DOKI", name: "DOKIMAZO S.R.L. SOCIETA BENEFIT", type: "Current Partner"},
-            {code: "PROMOS", name: "PROMOS SRL SB", type: "Associated Partner"}
-        ],
-        "Germany": [
-            {code: "FAU", name: "FRIEDRICH-ALEXANDER-UNIVERSITAET ERLANGEN-NUERNBERG", type: "Current Partner"},
-            {code: "TPSDA", name: "Teaching Public Service in the Digital Age c/o Interalia gGmbH", type: "Associated Partner"}
-        ],
-        "Spain": [
-            {code: "UPM", name: "UNIVERSIDAD POLITECNICA DE MADRID", type: "Current Partner"},
-            {code: "IE", name: "INSTITUTO DE EMPRESA SL", type: "Current Partner"},
-            {code: "MUSOL", name: "Fundación MUSOL", type: "Current Partner"},
-            {code: "IF.E", name: "Inspiring Futures Europe", type: "Current Partner"},
-            {code: "KYRA", name: "KYRA SUNRISE SL", type: "Current Partner"},
-            {code: "DDS", name: "BYFACILITY SL", type: "Current Partner"},
-            {code: "UPSA", name: "Universidad Pontificia de Salamanca", type: "Associated Partner"}
-        ],
-        "Belgium": [
-            {code: "FARI", name: "VRIJE UNIVERSITEIT BRUSSEL", type: "Current Partner"},
-            {code: "KUL", name: "KATHOLIEKE UNIVERSITEIT LEUVEN", type: "Current Partner"},
-            {code: "CEPS", name: "CENTRE FOR EUROPEAN POLICY STUDIES", type: "Current Partner"},
-            {code: "VUC", name: "VUCABLE", type: "Current Partner"},
-            {code: "RIE", name: "RE-IMAGINE EUROPA", type: "Current Partner"},
-            {code: "TRS", name: "THE RIGHT STREET", type: "Current Partner"},
-            {code: "DE", name: "Digital Europe", type: "Associated Partner"},
-            {code: "TotalEU", name: "TotalEU Production", type: "Associated Partner"}
-        ],
-        "Estonia": [
-            {code: "EBS", name: "SIHTASUTUS ESTONIAN BUSINESS SCHOOL", type: "Current Partner"},
-            {code: "Tartu", name: "University of Tartu", type: "Associated Partner"}
-        ],
-        "Portugal": [
-            {code: "Tec+", name: "ASSOCIACAO PARA O DESENVOLVIMENTO DO INSTITUTO SUPERIOR TECNICO", type: "Current Partner"},
-            {code: "PBS", name: "ASSOCIACAO PORTO BUSINESS SCHOOL", type: "Current Partner"},
-            {code: "INA", name: "Instituto Nacional de Administração, I.P.", type: "Associated Partner"},
-            {code: "UNU-EGOV", name: "United Nations University", type: "Associated Partner"}
-        ],
-        "Bulgaria": [
-            {code: "RAM", name: "REGIONALNO SDRUZHENIE NA OBSTINI TSENTRALNA STARA PLANINA", type: "Current Partner"},
-            {code: "ITService", name: "ITService ltd.", type: "Associated Partner"},
-            {code: "Gabrovo", name: "Municipality of Gabrovo", type: "Associated Partner"},
-            {code: "Elena", name: "Municipality of Elena", type: "Associated Partner"}
-        ],
-        "Hungary": [
-            {code: "BME", name: "BUDAPESTI MUSZAKI ES GAZDASAGTUDOMANYI EGYETEM", type: "Current Partner"},
-            {code: "UP", name: "University of Pecs", type: "Associated Partner"}
-        ],
-        "Croatia": [
-            {code: "FIDIT", name: "SVEUCILISTE U RIJECI", type: "Current Partner"},
-            {code: "EFRI", name: "SVEUCILISTE U RIJECI EKONOMSKI FAKULTET", type: "Current Partner"}
-        ],
-        "Netherlands": [{code: "TUD", name: "TECHNISCHE UNIVERSITEIT DELFT", type: "Current Partner"}],
-        "France": [
-            {code: "UL", name: "UNIVERSITE DE LILLE", type: "Current Partner"},
-            {code: "ESSEC", name: "ASSOCIATION GROUPE ESSEC", type: "Current Partner"}
-        ],
-        "Austria": [{code: "DUK", name: "UNIVERSITAT FUR WEITERBILDUNG KREMS", type: "Current Partner"}],
-        "Greece": [
-            {code: "UAE", name: "PANEPISTIMIO AIGAIOU", type: "Current Partner"},
-            {code: "EPLO", name: "EUROPEAN PUBLIC LAW ORGANIZATION", type: "Current Partner"}
-        ],
-        "Romania": [{code: "UPB", name: "UNIVERSITATEA NATIONALA DE STIINTASI TEHNOLOGIE POLITEHNICA BUCURESTI", type: "Current Partner"}],
-        "Slovakia": [{code: "TUKE", name: "TECHNICKA UNIVERZITA V KOSICIACH", type: "Current Partner"}],
-        "Ukraine": [{code: "KNTU", name: "KHERSON NATIONAL TECHNICAL UNIVERSITY", type: "Current Partner"}],
-        "Cyprus": [{code: "ANETEL", name: "ANAPTYXIAKI ETAIREIA EPARCHION LARNAKAS", type: "Current Partner"}],
-        "Serbia": [{code: "E.INT", name: "GORAN PASTROVIC", type: "Current Partner"}],
-        "Montenegro": [{code: "ReSPA", name: "ReSPA", type: "Associated Partner"}],
-
-        // --- Associated Partners ---
-        "Ireland": [{code: "GALWAY", name: "University of Galway", type: "Associated Partner"}],
-        "Latvia": [{code: "ITI", name: "Information Technology Institute", type: "Associated Partner"}],
-        "North Macedonia": [{code: "UKIM", name: "Ss Cyril and Methodius University in Skopje, Faculty of Economics", type: "Associated Partner"}],
-        "Slovenia": [
-            {code: "JSI", name: "Jožef Stefan Institute", type: "Associated Partner"},
-            {code: "E-zavod", name: "E-zavod", type: "Associated Partner"}
-        ],
-        "Lithuania": [{code: "Visionary", name: "Visionary Analytics (UAB)", type: "Associated Partner"}],
-        "Sweden": [
-            {code: "Experio", name: "Region Värmland / Experio Lab", type: "Associated Partner"},
-            {code: "Linköping", name: "Linköping University", type: "Associated Partner"}
-        ],
-        "Finland": [
-            {code: "CLANED", name: "Learning Intelligence Group LIG Oy", type: "Associated Partner"},
-            {code: "LAUREA", name: "Laurea University of Applied Sciences", type: "Associated Partner"}
-        ],
-        "Norway": [
-            {code: "NTNU", name: "Norwegian University of Science and Technology", type: "Associated Partner"},
-            {code: "SINTEF", name: "SINTEF Digital", type: "Associated Partner"}
-        ],
-        "Denmark": [{code: "CBS", name: "Copenhagen Business School", type: "Associated Partner"}],
-        "Poland": [
-            {code: "CEZAMAT", name: "CEZAMAT PW Sp. z o.o.", type: "Associated Partner"},
-            {code: "SGH", name: "Warsaw School of Economics", type: "Associated Partner"}
-        ],
-        "Bosnia and Herzegovina": [
-            {code: "SERDA", name: "Sarajevo Economic Region Development Agency", type: "Associated Partner"},
-            {code: "PREDA", name: "Razvojna agencija Grada Prijedor", type: "Associated Partner"},
-            {code: "AduRS", name: "Civil Service Agency of the Republic of Srpska", type: "Associated Partner"}
-        ],
-        "Turkey": [{code: "Galatasaray", name: "University Galatasaray - Faculty of Law", type: "Associated Partner"}],
-        "Albania": [
-            {code: "IAM", name: "Institute for Albanian Municipalities", type: "Associated Partner"},
-            {code: "AI Albania", name: "Albanian Center for Artificial Intelligence", type: "Associated Partner"}
-        ],
-        
-        "Australia": [{code: "EAC", name: "Ethical AI Consulting Pty Ltd", type: "Associated Partner"}],
-        "United Arab Emirates": [{code: "CFG", name: "Center for the Future of Government (MBRSG)", type: "Associated Partner"}],
-        "South Korea": [{code: "IFG", name: "Institute for Future Government, Yonsei University", type: "Associated Partner"}],
-        
-        "Morocco": [
-            {code: "ENSIAS", name: "École Nationale Supérieure d’Informatique et d’Analyse des Systèmes", type: "Associated Partner"},
-            {code: "Intilaka", name: "Association al Intilaka", type: "Associated Partner"}
-        ],
-        "Egypt": [
-            {code: "BTU", name: "Beni Suef Technological University", type: "Associated Partner"},
-            {code: "BRISK", name: "BRISK Business", type: "Associated Partner"},
-            {code: "GLC", name: "Green Line Consult", type: "Associated Partner"}
-        ],
-        "Argentina": [{code: "FLACSO", name: "Facultad Latinoamerica de Ciencias Sociales", type: "Associated Partner"}],
-        "Costa Rica": [{code: "DEMUCA", name: "Fundación DEMUCA", type: "Associated Partner"}],
-        "Guatemala": [{code: "DEMUCA", name: "Fundación DEMUCA", type: "Associated Partner"}],
-        "Ecuador": [{code: "UASB", name: "Universidad Andina Simón Bolívar (Andean Community)", type: "Associated Partner"}],
-        "Colombia": [{code: "UASB", name: "Universidad Andina Simón Bolívar (Andean Community)", type: "Associated Partner"}],
-        "Peru": [{code: "UASB", name: "Universidad Andina Simón Bolívar (Andean Community)", type: "Associated Partner"}],
-        "Bolivia": [{code: "UASB", name: "Universidad Andina Simón Bolívar (Andean Community)", type: "Associated Partner"}],
-    };
+    // Official participants are keyed by amendment number and PIC. Additional coverage
+    // creates map entries but does not create additional participants.
+    const participants = window.CONSORTIUM_PARTICIPANTS;
+    const partnerData = {};
+    function addCountryEntry(country, participant, isAdditionalCoverage) {
+        if (!partnerData[country]) partnerData[country] = [];
+        partnerData[country].push({
+            number: participant.number,
+            code: participant.shortName,
+            name: participant.legalName,
+            alias: participant.displayAlias || "",
+            officialCountry: participant.country,
+            pic: participant.pic,
+            isAdditionalCoverage,
+            type: participant.role === "AP" ? "Associated Partner" : "Current Partner"
+        });
+    }
+    participants.forEach(participant => {
+        addCountryEntry(participant.country, participant, false);
+        (participant.additionalCoverage || []).forEach(country => addCountryEntry(country, participant, true));
+    });
 
     // --- Application Configuration ---
     const PARTNER_TYPES = {
@@ -587,7 +477,7 @@
         "The Netherlands": "Netherlands",
         "Republic of Ireland": "Ireland"
     };
-    const MAP_UPDATED_LABEL = "5 Sep 2026";
+    const MAP_UPDATED_LABEL = "29 Sep 2026";
     const SOURCE_URL = "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/projects-details/43152860/101190043";
     const uiState = { query: "", filter: "all" };
     const countryLayers = new Map();
@@ -616,6 +506,8 @@
             currentSet: new Set(),
             assocSet: new Set(),
             countries: Object.keys(partnerData).length,
+            officialCountrySet: new Set(participants.map(participant => participant.country)),
+            officialCountries: new Set(participants.map(participant => participant.country)).size,
             continents: new Set(),
             data: { full: {}, assoc: {} }
         };
@@ -628,11 +520,11 @@
 
             partners.forEach(partner => {
                 if (partner.type === PARTNER_TYPES.full) {
-                    stats.currentSet.add(partner.code);
-                    stats.data.full[country].push(partner);
+                    stats.currentSet.add(partner.number);
+                    if (!partner.isAdditionalCoverage) stats.data.full[country].push(partner);
                 } else if (partner.type === PARTNER_TYPES.assoc) {
-                    stats.assocSet.add(partner.code);
-                    stats.data.assoc[country].push(partner);
+                    stats.assocSet.add(partner.number);
+                    if (!partner.isAdditionalCoverage) stats.data.assoc[country].push(partner);
                 }
             });
         }
@@ -642,6 +534,11 @@
     function validatePartnerData() {
         const validTypes = new Set(Object.values(PARTNER_TYPES));
         const issues = [];
+        if (participants.length !== 83) issues.push(`Expected 83 active participants, found ${participants.length}`);
+        if (new Set(participants.map(participant => participant.number)).size !== 83) issues.push("Duplicate participant number");
+        if (new Set(participants.map(participant => participant.pic)).size !== 83) issues.push("Duplicate PIC");
+        if (new Set(participants.map(participant => participant.country)).size !== 41) issues.push("Official country count is not 41");
+        if (Object.keys(partnerData).length !== 45) issues.push("Covered country count is not 45");
         for (const [country, partners] of Object.entries(partnerData)) {
             if (!continentMap[country]) issues.push(`Missing continent for ${country}`);
             if (!Array.isArray(partners) || partners.length === 0) issues.push(`No partners for ${country}`);
@@ -658,7 +555,7 @@
         const typeMatches = uiState.filter === "all" || partner.type === PARTNER_TYPES[uiState.filter];
         if (!typeMatches) return false;
         if (!uiState.query) return true;
-        const haystack = `${country} ${partner.code} ${partner.name}`.toLocaleLowerCase();
+        const haystack = `${country} ${partner.code} ${partner.name} ${partner.alias} ${partner.officialCountry} ${partner.number}`.toLocaleLowerCase();
         return haystack.includes(uiState.query);
     }
 
@@ -670,6 +567,7 @@
         const country = normalizeCountryName(feature.properties.name);
         const visiblePartners = getVisiblePartners(country);
         const visibleTypes = new Set(visiblePartners.map(partner => partner.type));
+        const coverageOnly = visiblePartners.length > 0 && visiblePartners.every(partner => partner.isAdditionalCoverage);
         let fillColor = COLOR_DEFAULT;
 
         if (visibleTypes.size > 1) fillColor = COLOR_BOTH;
@@ -680,7 +578,8 @@
             fillColor,
             weight: 1,
             opacity: 1,
-            color: "white",
+            color: coverageOnly ? "#325f7a" : "white",
+            dashArray: coverageOnly ? "4 3" : null,
             fillOpacity: visiblePartners.length ? 0.78 : 0.48
         };
     }
@@ -689,8 +588,10 @@
         const visiblePartners = getVisiblePartners(country);
         const partners = visiblePartners.length ? visiblePartners : (partnerData[country] || []);
         let html = `<div class="popup-header">${escapeHtml(country)}</div><ul class="partner-list">`;
-        partners.forEach(partner => {
-            html += `<li><b>${escapeHtml(partner.code)}</b><br>${escapeHtml(partner.name)}<br><span class="tag ${TYPE_TAG_CLASSES[partner.type]}">${TYPE_LABELS[partner.type]}</span></li>`;
+        partners.sort((a, b) => (a.type === PARTNER_TYPES.assoc) - (b.type === PARTNER_TYPES.assoc) || a.number - b.number).forEach(partner => {
+            const alias = partner.alias ? `<br><span class="partner-alias">Also known as ${escapeHtml(partner.alias)}</span>` : "";
+            const coverage = partner.isAdditionalCoverage ? `<br><span class="coverage-label">Additional geographic coverage · official country: ${escapeHtml(partner.officialCountry)}</span>` : "";
+            html += `<li><b>${partner.number} | ${escapeHtml(partner.code)}</b><br>${escapeHtml(partner.name)}${alias}${coverage}<br><span class="tag ${TYPE_TAG_CLASSES[partner.type]}">${TYPE_LABELS[partner.type]}</span></li>`;
         });
         return `${html}</ul>`;
     }
@@ -724,17 +625,13 @@
     const appStats = calculateStats();
 
     // --- Accessible Detail Dialog ---
-    function buildSimplePartnerSections(dataObject) {
-        let html = "";
-        for (const [country, partners] of Object.entries(dataObject)) {
-            if (!partners.length) continue;
-            html += `<div class="modal-section-title">${escapeHtml(country)}</div><ul class="modal-list">`;
-            partners.forEach(partner => {
-                html += `<li><span>${escapeHtml(partner.name)}</span><b>${escapeHtml(partner.code)}</b></li>`;
-            });
-            html += "</ul>";
-        }
-        return html;
+    function buildNumberedPartnerList(dataObject) {
+        const partners = Object.entries(dataObject)
+            .flatMap(([country, entries]) => entries.map(partner => ({ country, partner })))
+            .sort((a, b) => a.partner.number - b.partner.number);
+        return `<ul class="modal-list">${partners.map(({ country, partner }) =>
+            `<li><span>${escapeHtml(partner.name)} · ${escapeHtml(country)}</span><b>${partner.number} | ${escapeHtml(partner.code)}</b></li>`
+        ).join("")}</ul>`;
     }
 
     function openModal(type) {
@@ -743,13 +640,13 @@
 
         if (type === "full") {
             title = `Full Partners (${appStats.currentSet.size})`;
-            html = `<p><b>Full Partners by Country</b></p>${buildSimplePartnerSections(appStats.data.full)}`;
+            html = buildNumberedPartnerList(appStats.data.full);
         } else if (type === "assoc") {
             title = `Associated Partners (${appStats.assocSet.size})`;
-            html = `<p><b>Associated Partners by Country</b></p>${buildSimplePartnerSections(appStats.data.assoc)}`;
+            html = buildNumberedPartnerList(appStats.data.assoc);
         } else if (type === "countries") {
             title = `Countries Covered (${appStats.countries})`;
-            html = "<p><b>Countries by Continent</b></p>";
+            html = `<p><b>${appStats.officialCountries} officially represented countries + ${appStats.countries - appStats.officialCountries} additional coverage countries.</b> Each participant is counted once.</p><p><b>Countries by Continent</b></p>`;
             const groups = {};
             Object.keys(partnerData).sort().forEach(country => {
                 const continent = continentMap[country];
@@ -757,7 +654,7 @@
                 groups[continent].push(country);
             });
             for (const [continent, countries] of Object.entries(groups)) {
-                html += `<div class="modal-section-title">${escapeHtml(continent)}</div><div class="modal-subsection">${countries.map(escapeHtml).join(", ")}</div>`;
+                html += `<div class="modal-section-title">${escapeHtml(continent)}</div><div class="modal-subsection">${countries.map(country => `${escapeHtml(country)}${appStats.officialCountrySet.has(country) ? "" : " (additional coverage)"}`).join(", ")}</div>`;
             }
         } else if (type === "continents") {
             title = `Continents Covered (${appStats.continents.size})`;
@@ -837,11 +734,7 @@
     backupTiles.on("tileerror", () => showStatus("The map background is temporarily unavailable.", true, 0));
     primaryTiles.addTo(map);
 
-    fetch("assets/countries.geo.json")
-        .then(response => {
-            if (!response.ok) throw new Error(`Country data request failed (${response.status})`);
-            return response.json();
-        })
+    Promise.resolve(window.COUNTRY_BOUNDARIES)
         .then(data => {
             geoJsonLayer = L.geoJson(data, {
                 style: getCountryStyle,
@@ -888,8 +781,8 @@
 
     // --- Search, Filters, and Partner List ---
     const sectionConfig = [
-        { key: "assoc", label: "Associated Partners" },
-        { key: "full", label: "Full Partners" }
+        { key: "full", label: "Full Partners" },
+        { key: "assoc", label: "Associated Partners" }
     ];
 
     function buildPartnerList() {
@@ -898,25 +791,25 @@
 
         sectionConfig.forEach(section => {
             if (uiState.filter !== "all" && uiState.filter !== section.key) return;
-            const byContinent = {};
-            for (const [country, partners] of Object.entries(partnerData)) {
-                const matches = partners.filter(partner => partner.type === PARTNER_TYPES[section.key] && matchesCurrentView(country, partner));
-                if (!matches.length) continue;
-                const continent = continentMap[country];
-                if (!byContinent[continent]) byContinent[continent] = [];
-                matches.forEach(partner => byContinent[continent].push({ country, partner }));
-                resultCount += matches.length;
-            }
-            if (!Object.keys(byContinent).length) return;
+            const matches = participants
+                .filter(participant => (participant.role === "AP" ? "assoc" : "full") === section.key)
+                .map(participant => ({
+                    participant,
+                    partner: partnerData[participant.country].find(entry => entry.number === participant.number && !entry.isAdditionalCoverage)
+                }))
+                .filter(({ participant, partner }) => [participant.country, ...(participant.additionalCoverage || [])]
+                    .some(country => matchesCurrentView(country, partner)))
+                .sort((a, b) => a.participant.number - b.participant.number);
+            if (!matches.length) return;
 
+            resultCount += matches.length;
             html += `<section class="list-group"><div class="list-group-title">${section.label}</div>`;
-            Object.keys(byContinent).sort().forEach(continent => {
-                html += `<div class="continent-label">${escapeHtml(continent)}</div>`;
-                byContinent[continent]
-                    .sort((a, b) => a.country.localeCompare(b.country) || a.partner.code.localeCompare(b.partner.code))
-                    .forEach(({ country, partner }) => {
-                        html += `<button type="button" class="sidebar-item" data-country="${encodeURIComponent(country)}" aria-label="Show ${escapeHtml(partner.name)} in ${escapeHtml(country)}"><span class="sidebar-name"><b>${escapeHtml(partner.code)}</b> ${escapeHtml(partner.name)}</span><span class="sidebar-country">${escapeHtml(country)}</span></button>`;
-                    });
+            matches.forEach(({ participant, partner }) => {
+                const country = participant.country;
+                const coverage = (participant.additionalCoverage || []).length
+                    ? ` <span class="coverage-label">(also covers ${escapeHtml(participant.additionalCoverage.join(", "))})</span>` : "";
+                const alias = partner.alias ? ` <span class="partner-alias">(${escapeHtml(partner.alias)})</span>` : "";
+                html += `<button type="button" class="sidebar-item" data-country="${encodeURIComponent(country)}" aria-label="Show ${escapeHtml(partner.name)} in ${escapeHtml(country)}"><span class="sidebar-name"><b>${partner.number} | ${escapeHtml(partner.code)}</b> ${escapeHtml(partner.name)}${alias}${coverage}</span><span class="sidebar-country">${escapeHtml(country)}</span></button>`;
             });
             html += "</section>";
         });
@@ -978,7 +871,7 @@
                 <button type="button" class="stat-item" data-modal="continents"><span class="stat-number">${appStats.continents.size}</span><span class="stat-label">Continents Covered</span></button>
             </div>
             <div class="partner-scroll" id="partnerList" aria-live="polite"></div>
-            <div class="data-meta"><span>Map updated ${MAP_UPDATED_LABEL}</span><a href="${SOURCE_URL}" target="_blank" rel="noopener noreferrer">View source</a></div>
+            <div class="data-meta"><span>Updated ${MAP_UPDATED_LABEL}</span><a href="${SOURCE_URL}" target="_blank" rel="noopener noreferrer">Project record</a></div>
         `;
 
         if (window.matchMedia("(max-width: 640px)").matches) panel.classList.add("minimized");
@@ -1039,6 +932,7 @@
             <div class="legend-row"><span class="legend-swatch" style="background:${COLOR_FULL}"></span>Full Partners</div>
             <div class="legend-row"><span class="legend-swatch" style="background:${COLOR_ASSOCIATED}"></span>Associated Partners</div>
             <div class="legend-row"><span class="legend-swatch" style="background:${COLOR_BOTH}"></span>Full &amp; Associated Partners</div>
+            <div class="legend-row"><span class="legend-swatch" style="background:${COLOR_ASSOCIATED};outline:2px dashed #325f7a;outline-offset:-2px"></span>Additional geographic coverage is labeled in details</div>
         `;
         return panel;
     };
